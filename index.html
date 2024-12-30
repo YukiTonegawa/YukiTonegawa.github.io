@@ -29,9 +29,10 @@
             function generate_sequence(event) {
                 var N = document.querySelector("#f_n");
                 var L = document.querySelector("#f_l");
-                var R = document.querySelector("#f_r");
-                var V = random_int_array(N, L, R);
-                var result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                //var R = document.querySelector("#f_r");
+                //var V = random_int_array(N, L, R);
+                //var result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                var result = N.value;
                 var out_seq = document.querySelector("#out_seq");
                 out_seq.innerHTML = result;
             }
