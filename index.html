@@ -28,15 +28,15 @@
         <script type="module">
             import {random_int_array} from "./src/random.js";
             function generate_sequence(event) {
-                let N = document.querySelector("#f_n");
-                let L = document.querySelector("#f_l");
-                let R = document.querySelector("#f_r");
-                let V = random_int_array(N, L, R);
-                let result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
-                let out_seq = document.querySelector("#out_seq");
+                var N = document.querySelector("#f_n");
+                var L = document.querySelector("#f_l");
+                var R = document.querySelector("#f_r");
+                //var V = random_int_array(N, L, R);
+                var result = 1;//"<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                var out_seq = document.querySelector("#out_seq");
                 out_seq.innerHTML = result;
             }
-            document.querySelector('#btn').addEventListener('click', generate_sequence)
+            document.querySelector("#btn").addEventListener("click", generate_sequence)
         </script>
     </body>
 </html>
