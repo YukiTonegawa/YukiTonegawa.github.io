@@ -20,32 +20,23 @@
             <input type="number" id="f_r" class="form-control">
         </div>
         <div>
-            <button onclick="generate_sequence(event)" class="btn">
+            <button onclick="generate_sequence(event)" id="btn">
                 生成
             </button>
         </div>
         <p id="out_seq"> 長さN、各要素がL以上R未満の整数列を生成します。</p>
-        <script>
+        <script type="module">
             import {random_int_array} from "./src/random.js";
             function generate_sequence(event) {
-                var N = document.querySelector("#f_n");
-                var L = document.querySelector("#f_l");
-                var R = document.querySelector("#f_r");
-                var V = random_int_array(N, L, R);
-                var result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
-                var out_seq = document.querySelector("#out_seq");
+                let N = document.querySelector("#f_n");
+                let L = document.querySelector("#f_l");
+                let R = document.querySelector("#f_r");
+                let V = random_int_array(N, L, R);
+                let result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                let out_seq = document.querySelector("#out_seq");
                 out_seq.innerHTML = result;
             }
-        </script>
-        <script>
-            function action(event) {
-                var N = document.querySelector("#f_n");
-                var L = document.querySelector("#f_l");
-                var R = document.querySelector("#f_r");
-                var result = 1;
-                var out_seq = document.querySelector("#out_seq");
-                out_seq.innerHTML = result;
-            }
+            document.querySelector('#btn').addEventListener('click', generate_sequence)
         </script>
     </body>
 </html>
