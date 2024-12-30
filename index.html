@@ -20,7 +20,7 @@
             <input type="number" id="f_r" class="form-control">
         </div>
         <div>
-            <button onclick="generate_sequence(event)" class="btn">
+            <button onclick="action(event)" class="btn">
                 生成
             </button>
         </div>
@@ -31,8 +31,17 @@
                 var N = document.querySelector("#f_n");
                 var L = document.querySelector("#f_l");
                 var R = document.querySelector("#f_r");
-                //var V = random_int_array(N, L, R);
-                //var result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                var V = random_int_array(N, L, R);
+                var result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                var out_seq = document.querySelector("#out_seq");
+                out_seq.innerHTML = result;
+            }
+        </script>
+        <script>
+            function action(event) {
+                var N = document.querySelector("#f_n");
+                var L = document.querySelector("#f_l");
+                var R = document.querySelector("#f_r");
                 var result = 1;
                 var out_seq = document.querySelector("#out_seq");
                 out_seq.innerHTML = result;
