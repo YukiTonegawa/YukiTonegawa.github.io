@@ -32,8 +32,8 @@
                 let N = document.querySelector("#f_n");
                 let L = document.querySelector("#f_l");
                 let R = document.querySelector("#f_r");
-                //var V = random_int_array(N, L, R);
-                let result = 1;//"<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                var V = random_int_array(N, L, R);
+                let result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
                 let out_seq = document.querySelector("#out_seq");
                 out_seq.innerHTML = result;
             }
