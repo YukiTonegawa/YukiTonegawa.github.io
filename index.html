@@ -20,22 +20,22 @@
             <input type="number" id="f_r" class="form-control">
         </div>
         <div>
-            <script type="module">
-                import {random_int_array} from "./src/random.js";
-                function generate_sequence(event) {
-                    var N = document.querySelector("#f_n");
-                    var L = document.querySelector("#f_l");
-                    var R = document.querySelector("#f_r");
-                    var V = random_int_array(N, L, R);
-                    var result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
-                    var out_seq = document.querySelector("#out_seq");
-                    out_seq.innerHTML = result;
-                }
-            </script>
             <button onclick="generate_sequence(event)" class="btn">
                 生成
             </button>
         </div>
+        <script type="module">
+            import {random_int_array} from "./src/random.js";
+            function generate_sequence(event) {
+                var N = document.querySelector("#f_n");
+                var L = document.querySelector("#f_l");
+                var R = document.querySelector("#f_r");
+                var V = random_int_array(N, L, R);
+                var result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                var out_seq = document.querySelector("#out_seq");
+                out_seq.innerHTML = result;
+            }
+        </script>
         <p id="out_seq"> 長さN、各要素がL以上R未満の整数列を生成します。</p>
     </body>
 </html>
