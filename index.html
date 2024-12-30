@@ -20,7 +20,7 @@
             <input type="number" id="f_r" class="form-control">
         </div>
         <div>
-            <button onclick="generate_sequence(event)" id="btn">
+            <button onclick="generate_sequence(event);" id="btn">
                 生成
             </button>
         </div>
@@ -28,12 +28,12 @@
         <script type="module">
             import {random_int_array} from "./src/random.js";
             export function generate_sequence(event) {
-                var N = document.querySelector("#f_n");
-                var L = document.querySelector("#f_l");
-                var R = document.querySelector("#f_r");
+                let N = document.querySelector("#f_n");
+                let L = document.querySelector("#f_l");
+                let R = document.querySelector("#f_r");
                 //var V = random_int_array(N, L, R);
-                var result = 1;//"<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
-                var out_seq = document.querySelector("#out_seq");
+                let result = 1;//"<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                let out_seq = document.querySelector("#out_seq");
                 out_seq.innerHTML = result;
             }
             document.querySelector("#btn").addEventListener("click", generate_sequence)
