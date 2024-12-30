@@ -27,7 +27,7 @@
         <p id="out_seq"> 長さN、各要素がL以上R未満の整数列を生成します。</p>
         <script type="module">
             import {random_int_array} from "./src/random.js";
-            function generate_sequence(event) {
+            export function generate_sequence(event) {
                 var N = document.querySelector("#f_n");
                 var L = document.querySelector("#f_l");
                 var R = document.querySelector("#f_r");
