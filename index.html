@@ -20,12 +20,12 @@
             <input type="number" id="f_r" class="form-control">
         </div>
         <div>
-            <button onclick="action(event)" class="btn">
+            <button onclick="generate_sequence(event)" class="btn">
                 生成
             </button>
         </div>
         <p id="out_seq"> 長さN、各要素がL以上R未満の整数列を生成します。</p>
-        <script type="module">
+        <script>
             import {random_int_array} from "./src/random.js";
             function generate_sequence(event) {
                 var N = document.querySelector("#f_n");
