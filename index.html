@@ -5,6 +5,8 @@
         <title>Test</title>
     </head>
     <body>
+        <script src="./src/random.js"> </script>
+
         <h1>TestPage</h1>
         <p>GitHub Pagesのテストです。</p>
         <div class="gen_seq">
@@ -25,9 +27,8 @@
             </button>
         </div>
         <p id="out_seq"> 長さN、各要素がL以上R未満の整数列を生成します。</p>
-        <script type="module">
-            import {random_int_array} from "./src/random.js";
-            export function generate_sequence(event) {
+        <script>
+            function generate_sequence(event) {
                 let N = document.querySelector("#f_n");
                 let L = document.querySelector("#f_l");
                 let R = document.querySelector("#f_r");
@@ -36,7 +37,6 @@
                 let out_seq = document.querySelector("#out_seq");
                 out_seq.innerHTML = result;
             }
-            document.querySelector("#btn").addEventListener("click", generate_sequence)
         </script>
     </body>
 </html>
