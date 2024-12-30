@@ -7,29 +7,35 @@
     <body>
         <h1>TestPage</h1>
         <p>GitHub Pagesのテストです。</p>
-        <div class="form-group">
-            <label for="f1">Name</label>
-            <input type="text" id="f1" class="form-control">
+        <div class="gen_seq">
+            <label for="f_n">N</label>
+            <input type="number" id="f_n" class="form-control">
         </div>
-        <p>
-            <script>
-                document.write("JavaScriptではdocument.write(文)で文字を表示できます。");
-            </script>
-        </p>
-        <p>
+        <div class="gen_seq">
+            <label for="f_l">L</label>
+            <input type="number" id="f_l" class="form-control">
+        </div>
+        <div class="gen_seq">
+            <label for="f_r">R</label>
+            <input type="number" id="f_r" class="form-control">
+        </div>
+        <div>
             <script type="module">
-                import {random_permutation} from "./src/random.js";
-                document.write("長さ10のランダムな順列を表示します。" + "<br>");
-                random_permutation(10).forEach(function(elem) {
-                    document.write(elem, " ");
-                });
-                document.write("<br>");
-                document.close();
+                import {random_int_array} from "./src/random.js";
+                function generate_sequence(event) {
+                    var N = document.querySelector("#f_n");
+                    var L = document.querySelector("#f_l");
+                    var R = document.querySelector("#f_r");
+                    var V = random_int_array(N, L, R);
+                    var result = "<script>" + "document.write(N);" + "<br>" + "document.write(V)" + "<\/script>";
+                    var out_seq = document.querySelector("#out_seq");
+                    out_seq.innerHTML = result;
+                }
             </script>
-        </p>
-        <p>
-            <script src="src/say_hello.js">
-            </script>
-        </p>
+            <button onclick="generate_sequence(event)" class="btn">
+                生成
+            </button>
+        </div>
+        <p id="out_seq"> 長さN、各要素がL以上R未満の整数列を生成します。</p>
     </body>
 </html>
