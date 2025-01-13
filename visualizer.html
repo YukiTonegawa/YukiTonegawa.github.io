@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <title>スパゲッティ屋さん</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+        <script src="./src/random.js"></script>
+        <script src="./src/sequence.js"></script>
+        <script src="./src/graph.js"></script>
+        <script src="./src/graph_d3_template.js"></script>
+        <script src="./src/util.js"></script>
+
+    </head>
+    <body>
+        <!-- menu bar -->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="./index.html">
+                    <FONT color="#ffc107">スパゲッティ屋さん</FONT>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="./visualizer.html">Kyopro Visualizer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="./library.html">Library</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">github</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <h1 class="mx-3 my-3 mb-5">Kyopro Visualizer</h1>
+        
+        <!-- tab -->
+        <div class="container-sm">
+            <ul class="nav nav-tabs nav-justified" id="Tab" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="sequence-tab" aria-controls="sequence-tab-pane" aria-selected="true" role="tab" data-bs-toggle="tab" data-bs-target="#sequence-tab-pane" type="button">
+                        整数列
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="graph-tab" aria-controls="graph-tab-pane" aria-selected="false" role="tab" data-bs-toggle="tab" data-bs-target="#graph-tab-pane" type="button">
+                        無向グラフ
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="directed-graph-tab" aria-controls="directed-graph-tab-pane" aria-selected="false" role="tab" data-bs-toggle="tab" data-bs-target="#directed-graph-tab-pane" type="button">
+                        有向グラフ
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="geo-tab" aria-controls="geo-tab-pane" aria-selected="false" role="tab" data-bs-toggle="tab" data-bs-target="#geo-tab-pane" type="button">
+                        幾何
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- tab content -->
+        <div class="tab-content" id="TabContent">
+            <div class="tab-pane fade show active my-5" id="sequence-tab-pane" role="tabpanel" aria-labelledby="sequence-tab" tabindex="0">
+                
+                <div class="container-sm" style="width:65%;">
+                    <!-- ランダム生成 -->
+                    <div class="accordion mb-3">
+                        <div class="accordion-item" id="acc-random-sequence">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button bg bg-dark-subtle" type="button" data-bs-toggle="collapse" data-bs-target="#random-sequence" aria-expanded="true" aria-controls="random-sequence">
+                                    ランダム生成
+                                </button>
+                            </h2>
+                            <div id="random-sequence" class="accordion-collapse collapse" data-bs-parent="#acc-random-sequence">
+                                <div class="accordion-body">
+                                    <div class="d-flex mb-3">
+                                        <div class="form-group col-md-3">
+                                            <label for="random-sequence-len" class="form-label">長さ</label>
+                                            <input class="form-control border border-dark" id="random-sequence-len">
+                                        </div>
+                                        <div class="form-group col-md-3 mx-2">
+                                            <label for="random-sequence-lower" class="form-label">下限</label>
+                                            <input class="form-control border border-dark" id="random-sequence-lower">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="random-sequence-upper" class="form-label">上限</label>
+                                            <input class="form-control border border-dark" id="random-sequence-upper">
+                                        </div>
+                                        <span class="mt-4 ms-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-sequence-is-unique">
+                                                <label class="form-check-label" for="random-sequence-is-unique">重複なし</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-sequence-is-asc">
+                                                <label class="form-check-label" for="random-sequence-is-asc">単調非減少</label>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <button class="btn btn-primary mx-1" id="random-sequence-btn">生成</button>
+                                    <div id="error-random-sequence"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>   
+
+                    <!-- 入力 -->
+                    <div class="mb-3">
+                        <label for="input-sequence" class="form-label"><strong>数列をランダム生成するか入力してください</strong></label>
+                        <textarea class="form-control border border-dark" id="input-sequence" rows="3" placeholder="N&#13;&#10;a_1 a_2 a_3 ... a_N"></textarea>
+                        <button id="btn-sequence" class="btn btn-primary mt-3">決定</button>
+                        <div id="error-sequence"></div>
+                    </div>
+                </div>
+                
+                <!-- sequence info -->
+                <div id="sequence-cards" class="container-sm mt-5">
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">基本情報</h5>
+                        <div class="card-body">
+                            <!-- basic info -->
+                            <div class="container-sm">
+                                <table class="table" id="basic-info-sequence-table"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">累積</h5>
+                        <div class="card-body">
+                            <div class="dropdown d-flex justify-content-end mb-1">
+                                <button class="btn btn-secondary dropdown-toggle" id="toggle-btn-cumsum" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    演算: add
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" id="btn-cumsum-add">add</a></li>
+                                    <li><a class="dropdown-item" id="btn-cumsum-min">min</a></li>
+                                    <li><a class="dropdown-item" id="btn-cumsum-max">max</a></li>
+                                    <li><a class="dropdown-item" id="btn-cumsum-or">or</a></li>
+                                    <li><a class="dropdown-item" id="btn-cumsum-and">and</a></li>
+                                    <li><a class="dropdown-item" id="btn-cumsum-xor">xor</a></li>
+                                    <li><a class="dropdown-item" id="btn-cumsum-gcd">gcd</a></li>
+                                </ul>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-cumsum-copy">Copy</button>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control border border-dark z-0" id="cumsum-textarea" rows="3" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">差分</h5>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-diff-copy">Copy</button>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control border border-dark z-0" id="diff-textarea" rows="3" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">LIS</h5>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-lis-copy">Copy</button>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control border border-dark z-0" id="lis-textarea" rows="3" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>   
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">和が最大の連続部分列</h5>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-max-subarray-copy">Copy</button>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control border border-dark z-0" id="max-subarray-textarea" rows="3" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" id="histogram-pane">
+                        <h5 class="card-header bg bg-dark-subtle">棒グラフ</h5>
+                        <div class="card-body d-flex justify-content-around align-items-center">
+                            <div id="histogram_graph"></div>
+                            <div id="histogram-info"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">Cartesian Tree</h5>
+                        <div class="card-body">
+                           <div id="graph_cartesian_tree"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">Functional Graph</h5>
+                        <div class="card-body">
+                            <div id="info_functional"></div>
+                            <div id="graph_functional"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">P-recursive</h5>
+                        <div class="card-body">
+                            <div class="d-flex">
+
+                            </div>
+
+                            <div class="d-flex mb-3">
+                                <div class="form-group col-md-2">
+                                    <input class="form-control border border-dark z-0" id="p-rec-mod" placeholder="mod">
+                                </div>
+                                <div class="form-group col-md-2 mx-2">
+                                    <input class="form-control border border-dark z-0" id="p-rec-r" placeholder="r">
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <input class="form-control border border-dark z-0" id="p-rec-d" placeholder="d">
+                                </div>
+                                <button class="btn btn-primary mx-4" id="btn-p-recursive"> 計算 </button>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-p-recursive-copy">Copy</button>
+                            </div>
+                            <textarea class="form-control border border-dark z-0" id="p-recursive-textarea" rows="5" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+            <!-- グラフ -->
+            <div class="tab-pane fade my-5" id="graph-tab-pane" role="tabpanel" aria-labelledby="graph-tab" tabindex="0">
+                <!-- graph info -->
+
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-4 me-5">
+                        <!-- ランダム生成 -->
+                        <div class="accordion mb-3">
+                            <div class="accordion-item" id="acc-random-graph">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg bg-dark-subtle" type="button" data-bs-toggle="collapse" data-bs-target="#random-graph" aria-expanded="true" aria-controls="random-graph">
+                                        ランダム生成
+                                    </button>
+                                </h2>
+                                <div id="random-graph" class="accordion-collapse collapse" data-bs-parent="#acc-random-graph">
+                                    <div class="accordion-body">
+                                        <div class="d-flex mb-3">
+                                            <div class="form-group col-md-3">
+                                                <label for="random-graph-n" class="form-label">頂点数</label>
+                                                <input class="form-control border border-dark" id="random-graph-n">
+                                            </div>
+                                            <div class="form-group col-md-3 mx-2">
+                                                <label for="random-graph-m" class="form-label">辺の数</label>
+                                                <input class="form-control border border-dark" id="random-graph-m">
+                                            </div>
+                                        </div>
+                                        <span class="mt-4 ms-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-graph-is-connected">
+                                                <label class="form-check-label" for="random-graph-is-connected">連結性を保証</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-graph-is-weighted">
+                                                <label class="form-check-label" for="random-graph-is-weighted">重みあり</label>
+                                            </div>
+                                            <div clss="d-flex my-3" id="RGW1" style="display:none;">
+                                                <div class="d-flex mb-3">
+                                                    <div class="form-group col-md-3" id = "RGW2" style="display:none;">
+                                                        <label for="random-graph-weight-min" class="form-label">下限</label>
+                                                        <input class="form-control border border-dark" id="random-graph-weight-min">
+                                                    </div>
+                                                    <div class="form-group col-md-3 mx-2" id="RGW3" style="display:none;">
+                                                        <label for="random-graph-weight-max" class="form-label">上限</label>
+                                                        <input class="form-control border border-dark" id="random-graph-weight-max">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-graph-use-selfedge">
+                                                <label class="form-check-label" for="random-graph-use-selfedge">自己辺を許容</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-graph-use-multiedge">
+                                                <label class="form-check-label" for="random-graph-use-multiedge">多重辺を許容</label>
+                                            </div>
+                                        </span>
+                                        <button class="btn btn-primary mx-1 mt-3" id="random-graph-btn">生成</button>
+                                        <div id="error-random-graph"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>     
+    
+                        <!-- 入力 -->
+                        <div class="mb-3">
+                            <label for="input-graph" class="form-label"><strong>グラフをランダム生成するか入力してください</strong></label>
+                            <textarea class="form-control border border-dark" id="input-graph" rows="12"></textarea>
+                            <button id="btn-graph" class="btn btn-primary mt-3">決定</button>
+                            <div id="error-graph"></div>
+                        </div>
+                    </div>
+                    <div id="graph_panel"></div>
+                </div>
+                <!-- 入力 -->
+                
+                <div id="graph-cards" class="container-lg mt-5">
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">連結成分</h5>
+                        <div class="card-body d-flex justify-content-evenly">
+                            <div class="col-md-5 me-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-cc-copy">Copy</button>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control border border-dark z-0" id="info-cc" rows="3" readonly></textarea>
+                                </div>
+                            </div>
+                            <div id="graph_cc"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">2辺連結成分</h5>
+                        <div class="card-body d-flex justify-content-evenly">
+                            <div class="col-md-5 me-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-tecc-copy">Copy</button>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control border border-dark z-0" id="info-tecc" rows="3" readonly></textarea>
+                                </div>
+                            </div>
+                            <div id="graph_tecc"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">彩色数</h5>
+                        <div class="card-body d-flex justify-content-evenly">
+                            <div class="col-md-5 me-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-chromatic-copy">Copy</button>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control border border-dark z-0" id="info-chromatic" rows="3" readonly></textarea>
+                                </div>
+                                <div id="chromatic_number"></div>
+                            </div>
+                            <div id="graph_chromatic"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">最大マッチング</h5>
+                        <div class="card-body d-flex justify-content-evenly">
+                            <div class="col-md-5 me-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-matching-copy">Copy</button>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control border border-dark z-0" id="info-matching" rows="3" readonly></textarea>
+                                </div>
+                                <div id="matching_number"></div>
+                            </div>
+                            <div id="graph_matching"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">補グラフ</h5>
+                        <div class="card-body d-flex justify-content-evenly">
+                            <div class="col-md-5 me-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-complement-copy">Copy</button>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control border border-dark z-0" id="info-complement" rows="3" readonly></textarea>
+                                </div>
+                                <div id="matching_number"></div>
+                            </div>
+                            <div id="graph_complement"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 有向グラフ -->
+            <div class="tab-pane fade my-5" id="directed-graph-tab-pane" role="tabpanel" aria-labelledby="directed-graph-tab" tabindex="0">
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-4 me-5">
+                        <!-- ランダム生成 -->
+                        <div class="accordion mb-3">
+                            <div class="accordion-item" id="acc-random-dgraph">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg bg-dark-subtle" type="button" data-bs-toggle="collapse" data-bs-target="#random-directed-graph" aria-expanded="true" aria-controls="random-directed-graph">
+                                        ランダム生成
+                                    </button>
+                                </h2>
+                                <div id="random-directed-graph" class="accordion-collapse collapse" data-bs-parent="#acc-random-directed-graph">
+                                    <div class="accordion-body">
+                                        <div class="d-flex mb-3">
+                                            <div class="form-group col-md-3">
+                                                <label for="random-directed-graph-n" class="form-label">頂点数</label>
+                                                <input class="form-control border border-dark" id="random-directed-graph-n">
+                                            </div>
+                                            <div class="form-group col-md-3 mx-2">
+                                                <label for="random-directed-graph-m" class="form-label">辺の数</label>
+                                                <input class="form-control border border-dark" id="random-directed-graph-m">
+                                            </div>
+                                        </div>
+                                        <span class="mt-4 ms-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-directed-graph-is-weighted">
+                                                <label class="form-check-label" for="random-directed-graph-is-weighted">重みあり</label>
+                                            </div>
+                                            <div clss="d-flex my-3" id="RDGW1" style="display:none;">
+                                                <div class="d-flex mb-3">
+                                                    <div class="form-group col-md-3" id = "RDGW2" style="display:none;">
+                                                        <label for="random-directed-graph-weight-min" class="form-label">下限</label>
+                                                        <input class="form-control border border-dark" id="random-directed-graph-weight-min">
+                                                    </div>
+                                                    <div class="form-group col-md-3 mx-2" id="RDGW3" style="display:none;">
+                                                        <label for="random-directed-graph-weight-max" class="form-label">上限</label>
+                                                        <input class="form-control border border-dark" id="random-directed-graph-weight-max">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-directed-graph-use-selfedge">
+                                                <label class="form-check-label" for="random-directed-graph-use-selfedge">自己辺を許容</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-directed-graph-use-multiedge">
+                                                <label class="form-check-label" for="random-directed-graph-use-multiedge">多重辺を許容</label>
+                                            </div>
+                                        </span>
+                                        <button class="btn btn-primary mx-1 mt-3" id="random-directed-graph-btn">生成</button>
+                                        <div id="error-random-directed-graph"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>     
+    
+                        <!-- 入力 -->
+                        <div class="mb-3">
+                            <label for="input-directed-graph" class="form-label"><strong>グラフをランダム生成するか入力してください</strong></label>
+                            <textarea class="form-control border border-dark" id="input-directed-graph" rows="12"></textarea>
+                            <button id="btn-directed-graph" class="btn btn-primary mt-3">決定</button>
+                            <div id="error-directed-graph"></div>
+                        </div>
+                    </div>
+                    <div id="directed_graph_panel"></div>
+                </div>
+
+                <!-- dgraph info -->
+                <div id="directed-graph-cards" class="container-lg mt-5">
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">強連結成分</h5>
+                        <div class="card-body d-flex justify-content-evenly">
+                            <div class="col-md-5 me-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-scc-copy">Copy</button>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control border border-dark z-0" id="info-scc" rows="3" readonly></textarea>
+                                </div>
+                            </div>
+                            <div id="graph_scc"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">最短距離</h5>
+                        <div class="card-body d-flex justify-content-evenly">
+                            <div class="col-md-5 me-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-dijkstra-copy">Copy</button>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control border border-dark z-0" id="info-dijkstra" rows="3" readonly></textarea>
+                                </div>
+                            </div>
+                            <div id="graph_dijkstra"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">最大フロー / 最小カット (s-t固定) </h5>
+                        <div class="card-body d-flex justify-content-evenly">
+                            <div class="col-md-5 me-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-mfmc-copy">Copy</button>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control border border-dark z-0" id="info-mfmc" rows="3" readonly></textarea>
+                                </div>
+                                <div id="info_mf"></div>
+                            </div>
+                            <span>
+                                <div id="graph_mf"></div>
+                                <div id="graph_mc"></div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-pane fade my-5" id="geo-tab-pane" role="tabpanel" aria-labelledby="geo-tab" tabindex="0">
+                <div class="container-sm" style="width:65%;">
+                    <!-- ランダム生成 -->
+                    <div class="accordion mb-3">
+                        <div class="accordion-item" id="acc-random-sequence">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button bg bg-dark-subtle" type="button" data-bs-toggle="collapse" data-bs-target="#random-geo" aria-expanded="true" aria-controls="random-geo">
+                                    ランダム生成
+                                </button>
+                            </h2>
+                            <div id="random-geo" class="accordion-collapse collapse" data-bs-parent="#acc-random-geo">
+                                <div class="accordion-body">
+                                    <div class="d-flex mb-3">
+                                        <div class="form-group col-md-3">
+                                            <label for="random-geo-n" class="form-label">点の数</label>
+                                            <input class="form-control border border-dark" id="random-geo-n">
+                                        </div>
+                                        
+                                        <span class="mt-4 ms-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-dark" type="checkbox" id="random-sequence-is-unique">
+                                                <label class="form-check-label" for="random-sequence-is-unique">重複なし</label>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <button class="btn btn-primary mx-1" id="random-geo-btn">生成</button>
+                                    <div id="error-random-geo"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>   
+
+                    <!-- 入力 -->
+                    <div class="mb-3">
+                        <label for="input-geo" class="form-label"><strong>点群をランダム生成するか入力してください</strong></label>
+                        <textarea class="form-control border border-dark" id="input-geo" rows="3"></textarea>
+                        <button id="btn-geo" class="btn btn-primary mt-3">決定</button>
+                        <div id="error-geo"></div>
+                    </div>
+                </div>
+                
+                <!-- sequence info -->
+                <div id="geo-cards" class="container-sm mt-5">
+                    <div class="card">
+                        <h5 class="card-header bg bg-dark-subtle">凸包</h5>
+                        <div class="card-body">
+                            <div class="container-sm">
+                                <table class="table"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 整数列のスクリプト -->
+        <script>
+            
+            function gen_random_sequence() {
+                document.getElementById("error-random-sequence").innerHTML = "";
+                let N = parseInt(document.getElementById("random-sequence-len").value);
+                let L = parseInt(document.getElementById("random-sequence-lower").value);
+                let R = parseInt(document.getElementById("random-sequence-upper").value);
+                let unq = document.getElementById("random-sequence-is-unique").checked;
+                let asc = document.getElementById("random-sequence-is-asc").checked;
+                let err = isNaN(N) || isNaN(L) || isNaN(R);
+                err |= (unq ? R - L + 1 < N : L > R);
+                if (err) {
+                   document.getElementById("error-random-sequence").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
+                } else {
+                    let V = rangom_arra(N, L, R, unq);
+                    if (asc) V.sort(function(a, b) { return a - b });
+                    let result = N + "\n";
+                    for (let i = 0; i < N; i++) {
+                        result += V[i] + (i + 1 == N ? "\n" : " ");
+                    }
+                    document.getElementById("input-sequence").value = result;
+                }
+            }
+            document.querySelector("#random-sequence-btn").addEventListener("click", gen_random_sequence);
+
+            let tmp_V = [];
+            function show_basic_info_sequence(V) {
+                const basic_info_map = new Map([
+                    ["Sum", calc_sum], ["Min", calc_min], ["Max", calc_max],
+                    ["Avg", calc_avg], ["Gcd", calc_gcd], ["Mex", calc_mex],
+                    ["転倒数", calc_inversion], ["部分列の種類(空列含む)", calc_number_of_subsequence]
+                ]);
+                let result = "<tr>" + "<th>名称</th>" + "<th>値</th>" + "</tr>";
+                for (const [key, value] of  basic_info_map.entries()) {
+                    result += "<tr>" + "<td>" + key + "</td>" + "<td>" + value(V) + "</td>" + "</tr>";
+                }
+                document.getElementById('basic-info-sequence-table').innerHTML = result;
+            }
+            const op_map = new Map([
+                ["add", function(a, b) { return a + b; }],
+                ["min", function(a, b) { return (a >= b ? b : a); }],
+                ["max", function(a, b) { return (a >= b ? a : b); }],
+                ["or",  function(a, b) { return a | b; }],
+                ["and", function(a, b) { return a & b; }],
+                ["xor", function(a, b) { return a ^ b; }],
+                ["gcd", function(a, b) { return gcd(a, b); }],
+            ]);
+
+            function show_cumsum(V, op_name) {
+                let S = calc_cumsum(V, op_map.get(op_name));
+                let N = S.length;
+                let result = N;
+                if (N) {
+                    result += "\n";
+                    for (let i = 0; i < N; i++) {
+                        result += S[i];                                
+                        if (i + 1 < N) {
+                            result += " ";
+                        }
+                    }
+                }
+                document.getElementById('cumsum-textarea').innerHTML = result;
+                document.getElementById('toggle-btn-cumsum').innerHTML = "演算: " + op_name;
+                activate_copy_button("cumsum-textarea", "btn-cumsum-copy");
+            }
+
+            document.getElementById('btn-cumsum-add').addEventListener('click', e => show_cumsum(tmp_V, "add"));
+            document.getElementById('btn-cumsum-min').addEventListener('click', e => show_cumsum(tmp_V, "min"));
+            document.getElementById('btn-cumsum-max').addEventListener('click', e => show_cumsum(tmp_V, "max"));
+            document.getElementById('btn-cumsum-or').addEventListener('click', e => show_cumsum(tmp_V, "or"));
+            document.getElementById('btn-cumsum-and').addEventListener('click', e => show_cumsum(tmp_V, "and"));
+            document.getElementById('btn-cumsum-xor').addEventListener('click', e => show_cumsum(tmp_V, "xor"));
+            document.getElementById('btn-cumsum-gcd').addEventListener('click', e => show_cumsum(tmp_V, "gcd"));
+
+            function show_diff(V) {
+                let S = calc_diff(V);
+                let N = S.length;
+                let result = N;
+                if (N) {
+                    result += "\n";
+                    for (let i = 0; i < N; i++) {
+                        result += S[i];                                
+                        if (i + 1 < N) {
+                            result += " ";
+                        }
+                    }
+                }
+                document.getElementById('diff-textarea').innerHTML = result;
+                activate_copy_button("diff-textarea", "btn-diff-copy");
+
+            }
+            function show_lis(V) {
+                let S = calc_lis_val(V);
+                let N = S.length;
+                let result = N;
+                if (N) {
+                    result += "\n";
+                    for (let i = 0; i < N; i++) {
+                        result += S[i];                                
+                        if (i + 1 < N) {
+                            result += " ";
+                        }
+                    }
+                }
+                document.getElementById('lis-textarea').innerHTML = result;
+                activate_copy_button("lis-textarea", "btn-lis-copy");
+            }
+            function show_maximum_subarray(V) {
+                let S = calc_maximum_subarray_val(V);
+                let N = S.length;
+                let result = N;
+                if (N) {
+                    result += "\n";
+                    for (let i = 0; i < N; i++) {
+                        result += S[i];                                
+                        if (i + 1 < N) {
+                            result += " ";
+                        }
+                    }
+                }
+                document.getElementById('max-subarray-textarea').innerHTML = result;
+                activate_copy_button("max-subarray-textarea", "btn-max-subarray-copy");
+            }
+
+            function show_histogram(V) {
+                histogram_graph.append(histogram_template(V));
+            }
+
+            function show_cartesian_tree(V) {
+                graph_cartesian_tree.append(cartesian_tree_template(V));
+                activate_zoom("graph_cartesian_tree");
+            }
+
+            function show_functional_graph(V) {
+                let N = V.length;
+                let is_functional = true;
+                for (let i = 0; i < N; i++) {
+                    if (V[i] <= 0 || N < V[i]) {
+                        is_functional = false;
+                        break;
+                    }
+                }
+                if (!is_functional) {
+                    document.getElementById('info_functional').innerHTML = "functional graphの場合のみ図が表示されます";
+                    document.getElementById('graph_functional').innerHTML = "";
+                    return;
+                }
+                document.getElementById('info_functional').innerHTML = "";
+                let E = [];
+                for (let i = 0; i < N; i++) {
+                    E.push(new edge(i, V[i] - 1, 1));
+                }
+                graph_functional.append(general_graph_template(N, new Array(N).fill(-1), E, true, false));
+                activate_zoom("graph_functional")
+            }
+
+            function show_p_recursive(V) {
+                let mod = parseInt(document.getElementById("p-rec-mod").value);
+                let r = parseInt(document.getElementById("p-rec-r").value);
+                let d = parseInt(document.getElementById("p-rec-d").value);
+                let ok = !isNaN(mod) && !isNaN(r) && !isNaN(d);
+                let ans = (ok ? findPRecursive(V, BigInt(mod), r, d) : []);
+                if (ans.length == 0) {
+                    let result = "見つかりませんでした。"
+                    document.getElementById('p-recursive-textarea').value = result;
+                } else {
+                    let result = "";
+                    for (let i = 0; i < ans.length; i++) {
+                        let m = ans[i].length;
+                        for (let j = 0; j < m; j++) {
+                            result += Number(ans[i][j]) + (j + 1 == m ? "\n" : " ");
+                        }
+                    }
+                    document.getElementById('p-recursive-textarea').value = result;
+                }
+                activate_copy_button("p-recursive-textarea", "btn-p-recursive-copy");
+            }
+
+            function reset_sequence() {
+                document.getElementById("error-sequence").innerHTML = "";
+                d3.selectAll("#histogram_graph svg").remove();
+                d3.selectAll("#graph_cartesian_tree svg").remove();
+                d3.selectAll("#graph_functional svg").remove();
+                document.getElementById("p-recursive-textarea").value = "";
+            }
+
+            function get_input_sequence() {
+                const s = document.querySelector("#input-sequence").value;
+                const row = s.split('\n');
+                if (row.lengtn == 0) return [false, []];
+                let N = parseInt(row[0]);
+                if (isNaN(N) || N < 0) return [false, []];
+                if (N == 0) return [true, []];
+                if (row.length < 2) return [false, []];
+                let V = [];
+                const row2 = row[1].split(' ');
+                for (let i = 0; i < row2.length; i++) {
+                    if (row2[i] == ' ' || row2[i] == '') continue;
+                    let x = parseInt(row2[i]);
+                    if (isNaN(x)) return [false, []];
+                    V.push(x);
+                }
+                return [true, V];
+            }
+
+            function show_input_sequence_info() {
+                let [f, V] = get_input_sequence();
+                if (!f) {
+                    document.getElementById("error-sequence").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
+                    return;
+                }
+                reset_sequence();
+                tmp_V = V;
+                show_basic_info_sequence(V);
+                show_cumsum(V, "add");
+                show_diff(V);
+                show_lis(V);
+                show_maximum_subarray(V);
+                show_histogram(V);
+                show_cartesian_tree(V);
+                show_functional_graph(V);
+                document.querySelector("#btn-p-recursive").addEventListener("click", e => show_p_recursive(tmp_V));
+            }
+
+            document.getElementById("btn-sequence").addEventListener("click", show_input_sequence_info);
+        </script>
+        
+        <!-- 無向グラフのスクリプト -->
+        <script>
+            let currentN = 0;
+            let currentE = [];
+            let currentW = false;
+
+            function toggle_graph_weight_form() {
+                let s = document.getElementById("RGW1").style.display != "none";
+                if (s) {
+                    document.getElementById("RGW1").style.display = "none";
+                    document.getElementById("RGW2").style.display = "none";
+                    document.getElementById("RGW3").style.display = "none";
+                } else {
+                    document.getElementById("RGW1").style.display = "";
+                    document.getElementById("RGW2").style.display = "";
+                    document.getElementById("RGW3").style.display = "";
+                }
+            }
+            document.getElementById("random-graph-is-weighted").addEventListener("change", toggle_graph_weight_form);
+
+            function get_random_graph() {
+                document.getElementById("error-random-graph").innerHTML = "";
+                let N = parseInt(document.getElementById("random-graph-n").value);
+                let M = parseInt(document.getElementById("random-graph-m").value);
+                let is_connected = document.getElementById("random-graph-is-connected").checked;
+                let is_weighted = document.getElementById("random-graph-is-weighted").checked;
+                let minw = 1, maxw = 1;
+                let use_selfedge = document.getElementById("random-graph-use-selfedge").checked;
+                let use_multiedge = document.getElementById("random-graph-use-multiedge").checked;
+                let valid = true;
+                if (isNaN(N) || isNaN(M) || (is_connected && M < N - 1)) valid = false;
+                if (is_weighted) {
+                    minw = parseInt(document.getElementById("random-graph-weight-min").value);
+                    maxw = parseInt(document.getElementById("random-graph-weight-max").value);
+                    if (isNaN(minw) || isNaN(maxw)) valid = false;
+                }
+                let E = [];
+                if (valid) E = random_undirected_graph(N, M, use_selfedge, use_multiedge, is_connected, minw, maxw);
+                if (E.length != M) valid = false;
+                if (!valid) {
+                    document.getElementById("error-random-graph").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
+                    return;
+                }
+                let result = N + " " + M + "\n";
+                for (let i = 0; i < M; i++) {
+                    let e = E[i];
+                    if (is_weighted) {
+                        result += (e.s + 1) + " " + (e.t + 1) + " " + e.w + "\n";
+                    } else {
+                        result += (e.s + 1) + " " + (e.t + 1) + "\n";
+                    }
+                }
+                document.getElementById("input-graph").value = result;
+            }
+
+            document.getElementById("random-graph-btn").addEventListener("click", get_random_graph);
+
+
+            function show_dummy_graph() {
+                graph_panel.append(general_graph_template(0, [], [], false, false));
+                graph_cc.append(general_graph_template(0, [], [], false, false));
+                graph_tecc.append(general_graph_template(0, [], [], false, false));
+                graph_chromatic.append(general_graph_template(0, [], [], false, false));
+                graph_matching.append(general_graph_template(0, [], [], false, false));
+                graph_complement.append(general_graph_template(0, [], [], false, false));
+            }
+
+            show_dummy_graph();
+
+            function reset_graph() {
+                d3.selectAll("#graph_panel svg").remove();
+                d3.selectAll("#graph_cc svg").remove();
+                d3.selectAll("#graph_tecc svg").remove();
+                d3.selectAll("#graph_chromatic svg").remove();
+                document.getElementById("chromatic_number").innerHTML = "";
+                d3.selectAll("#graph_matching svg").remove();
+                document.getElementById("matching_number").innerHTML = "";
+                d3.selectAll("#graph_complement svg").remove();
+            }
+
+            function get_input_graph() {
+                const row = document.getElementById("input-graph").value.split('\n');
+                if (row.lengtn == 0) return [-1, [], false];
+                let r0 = row[0].split(' ');
+                if (r0.length < 2 || isNaN(parseInt(r0[0])) || isNaN(parseInt(r0[1]))) return [-1, [], false];
+                let N = parseInt(r0[0]), M = parseInt(r0[1]);
+                if (N < 0 || M < 0 || row.length < M + 1) return [-1, [], false];
+                let E = [];
+                let is_weighted = false;
+                for (let i = 0; i < M; i++) {
+                    let crow = row[i + 1].split(' ');
+                    if (crow.length < 2) return [-1, [], false];
+                    let s = parseInt(crow[0]);
+                    let t = parseInt(crow[1]);
+                    let w = 1;
+                    if (crow.length >= 3) {
+                        is_weighted = true;
+                        w = parseInt(crow[2]);
+                    }
+                    if (isNaN(s) || isNaN(t) || isNaN(w)) return [-1, [], false];
+                    if (s < 1 || N < s || t < 1 || N < t) return [-1, [], false];
+                    E.push(new edge(s - 1, t - 1, w));
+                }
+                return [N, E, is_weighted];
+            }
+
+            function show_input_graph() {
+                document.getElementById("error-graph").innerHTML = "";
+                let [N, E, is_weighted] = get_input_graph();
+                if (N == -1) {
+                    document.getElementById("error-graph").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
+                    return;
+                }
+                reset_graph();
+                currentN = N;
+                currentE = E;
+                currentW = is_weighted;
+                reset_graph();
+                show_graph(N, E, is_weighted);
+                show_cc(N, E);
+                show_tecc(N, E);
+                show_chromatic(N, E);
+                show_matching(N, E, is_weighted);
+                show_complement_graph(N, E);
+            }
+
+            document.getElementById("btn-graph").addEventListener("click", show_input_graph);
+
+            function show_graph(N, E, is_weighted) {
+                graph_panel.append(general_graph_template(N, new Array(N).fill(-1), E, false, is_weighted));
+                activate_zoom("graph_panel");
+            }
+
+            function show_cc(N, E) {
+                let cc = calc_connected_component(N, E);
+                graph_cc.append(general_graph_template(N, cc, E, false, false));
+                activate_zoom("graph_cc");
+            }
+            
+            function show_tecc(N, E) {
+                let tecc = calc_two_edge_connected_component(N, E);
+                graph_tecc.append(general_graph_template(N, tecc, E, false, false));
+                activate_zoom("graph_tecc");
+            }
+            
+            function show_chromatic(N, E) {
+                for (let i = 0; i < E.length; i++) {
+                    let e = E[i];
+                    if (e.s == e.t) {
+                        document.getElementById("chromatic_number").innerHTML = "自己辺がある場合表示されません";
+                        graph_chromatic.append(general_graph_template(0, [], [], false, false));
+                        return;
+                    }
+                }
+                if (N <= 20) {
+                    let C = calc_chromatic_number(N, E);
+                    let c = C.length;
+                    document.getElementById("chromatic_number").innerHTML = "彩色数は" + c + "です";
+                    let cmp = new Array(N);
+                    for (let i = 0; i < c; i++) {
+                        for (let j = 0; j < C[i].length; j++) {
+                            cmp[C[i][j]] = i;
+                        }
+                    }
+                    graph_chromatic.append(general_graph_template(N, cmp, E, false, false));
+                    activate_zoom("graps_chromatic");
+                } else {
+                    let [f, cc] = calc_bipartite_graph(N, E);
+                    if (!f) {
+                        document.getElementById("chromatic_number").innerHTML = "彩色数は3以上です(N > 20かつ彩色数が3以上の場合正確な値が求められません)";
+                        graph_chromatic.append(general_graph_template(0, [], [], false, false));
+                    } else {
+                        let cnt0 = 0, cnt1 = 0;
+                        for (let i = 0; i < N; i++) {
+                            if (!cc[i]) {
+                                cnt0++;
+                            } else {
+                                cnt1++;
+                            }
+                        }
+                        let c = (cnt0 > 0) && (cnt1 > 0);
+                        document.getElementById("chromatic_number").innerHTML = "彩色数は" + c + "です";
+                        graph_chromatic.append(general_graph_template(N, cc, E, false, false));
+                        activate_zoom("graps_chromatic");
+                    }
+                }
+            }
+                
+            function show_matching(N, E, is_weighted) {
+                let [m, mate] = calc_general_matching(N, E);
+                let cmp = new Array(N);
+                for (let i = 0; i < N; i++) {
+                    cmp[i] = (mate[i] == -1 ? -1 : Math.min(i, mate[i]));
+                }
+                document.getElementById("matching_number").innerHTML = "最大マッチング数は" + m + "です";
+                graph_matching.append(general_graph_template(N, cmp, E, false, false));
+                activate_zoom("graph_matching");
+            }
+
+            function show_complement_graph(N, E) {
+                let E2 = calc_complement_graph(N, E);
+                graph_complement.append(general_graph_template(N, new Array(N).fill(-1), E2, false, false));
+                activate_zoom("graph_complement");
+            }
+        </script>
+
+        <!-- 有向グラフのスクリプト -->
+         <script>
+            let currentN_directed = 0;
+            let currentE_directed = [];
+            let currentW_directed = false;
+
+            function toggle_directed_graph_weight_form() {
+                let s = document.getElementById("RDGW1").style.display != "none";
+                if (s) {
+                    document.getElementById("RDGW1").style.display = "none";
+                    document.getElementById("RDGW2").style.display = "none";
+                    document.getElementById("RDGW3").style.display = "none";
+                } else {
+                    document.getElementById("RDGW1").style.display = "";
+                    document.getElementById("RDGW2").style.display = "";
+                    document.getElementById("RDGW3").style.display = "";
+                }
+            }
+            document.getElementById("random-directed-graph-is-weighted").addEventListener("change", toggle_directed_graph_weight_form);
+
+            function get_random_directed_graph() {
+                document.getElementById("error-random-directed-graph").innerHTML = "";
+                let N = parseInt(document.getElementById("random-directed-graph-n").value);
+                let M = parseInt(document.getElementById("random-directed-graph-m").value);
+                let is_weighted = document.getElementById("random-directed-graph-is-weighted").checked;
+                let minw = 1, maxw = 1;
+                let use_selfedge = document.getElementById("random-directed-graph-use-selfedge").checked;
+                let use_multiedge = document.getElementById("random-directed-graph-use-multiedge").checked;
+                let valid = true;
+                if (isNaN(N) || isNaN(M)) valid = false;
+                if (is_weighted) {
+                    minw = parseInt(document.getElementById("random-directed-graph-weight-min").value);
+                    maxw = parseInt(document.getElementById("random-directed-graph-weight-max").value);
+                    if (isNaN(minw) || isNaN(maxw)) valid = false;
+                }
+                let E = [];
+                if (valid) E = random_directed_graph(N, M, use_selfedge, use_multiedge, minw, maxw);
+                if (E.length != M) valid = false;
+                if (!valid) {
+                    document.getElementById("error-random-directed-graph").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
+                    return;
+                }
+                let result = N + " " + M + "\n";
+                for (let i = 0; i < M; i++) {
+                    let e = E[i];
+                    if (is_weighted) {
+                        result += (e.s + 1) + " " + (e.t + 1) + " " + e.w + "\n";
+                    } else {
+                        result += (e.s + 1) + " " + (e.t + 1) + "\n";
+                    }
+                }
+                document.getElementById("input-directed-graph").value = result;
+            }
+
+            document.getElementById("random-directed-graph-btn").addEventListener("click", get_random_directed_graph);
+
+            function show_dummy_directed_graph() {
+                directed_graph_panel.append(general_graph_template(0, [], [], false, false));
+                graph_scc.append(general_graph_template(0, [], [], false, false));
+                graph_dijkstra.append(general_graph_template(0, [], [], false, false));
+                graph_mf.append(general_graph_template(0, [], [], false, false));
+                graph_mc.append(general_graph_template(0, [], [], false, false));
+            }
+
+            show_dummy_directed_graph();
+
+            function reset_directed_graph() {
+                d3.selectAll("#directed_graph_panel svg").remove();
+                d3.selectAll("#graph_scc svg").remove();
+                d3.selectAll("#graph_dijkstra svg").remove();
+                d3.selectAll("#graph_mf svg").remove();
+                d3.selectAll("#graph_mc svg").remove();
+            }
+
+            function get_input_directed_graph() {
+                const row = document.getElementById("input-directed-graph").value.split('\n');
+                if (row.lengtn == 0) return [-1, [], false];
+                let r0 = row[0].split(' ');
+                if (r0.length < 2 || isNaN(parseInt(r0[0])) || isNaN(parseInt(r0[1]))) return [-1, [], false];
+                let N = parseInt(r0[0]), M = parseInt(r0[1]);
+                if (N < 0 || M < 0 || row.length < M + 1) return [-1, [], false];
+                let E = [];
+                let is_weighted = false;
+                for (let i = 0; i < M; i++) {
+                    let crow = row[i + 1].split(' ');
+                    if (crow.length < 2) return [-1, [], false];
+                    let s = parseInt(crow[0]);
+                    let t = parseInt(crow[1]);
+                    let w = 1;
+                    if (crow.length >= 3) {
+                        is_weighted = true;
+                        w = parseInt(crow[2]);
+                    }
+                    if (isNaN(s) || isNaN(t) || isNaN(w)) return [-1, [], false];
+                    if (s < 1 || N < s || t < 1 || N < t) return [-1, [], false];
+                    E.push(new edge(s - 1, t - 1, w));
+                }
+                return [N, E, is_weighted];
+            }
+
+            function show_input_directed_graph() {
+                document.getElementById("error-directed-graph").innerHTML = "";
+                let [N, E, is_weighted] = get_input_directed_graph();
+                if (N == -1) {
+                    document.getElementById("error-directed-graph").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
+                    return;
+                }
+                reset_directed_graph();
+                currentN_directed = N;
+                currentE_directed = E;
+                currentW_directed = is_weighted;
+                reset_directed_graph();
+                show_directed_graph(N, E, is_weighted);
+                show_scc(N, E);
+            }
+
+            document.getElementById("btn-directed-graph").addEventListener("click", show_input_directed_graph);
+
+            function show_directed_graph(N, E, is_weighted) {
+                directed_graph_panel.append(general_graph_template(N, new Array(N).fill(-1), E, true, is_weighted));
+                activate_zoom("directed_graph_panel");
+            }
+
+            function show_scc(N, E) {
+                let cmp = calc_strongly_connected_component(N, E);
+                graph_scc.append(general_graph_template(N, cmp, E, true, false));
+                activate_zoom("graph_scc");
+            }
+            
+            function show_dijkstra(N, E, s) {
+                let [dist, par] = calc_dijkstra(N, E, s);
+                let E2 = [];
+                let uf = new union_find(N);
+                for (let i = 0; i < E.length; i++) {
+                    let e = E[i];
+                    if (dist[e.t] != Number.MAX_SAFE_INTEGER / 2 && dist[e.t] == dist[e.s] + e.w) {
+                        E2.push(e);
+                    }
+                }
+                let cmp = new Array(N).fill(-1);
+                cmp[s] = 0;
+                graph_dijkstra.append(general_graph_template(N, cmp, E2, true, true, dist));
+                activate_zoom("graph_dijkstra");
+            }
+
+            function show_max_flow_min_cut(N, E, s, t) {
+                let [f, E2, cmp] = calc_max_flow_min_cut(N, E, s, t);
+                document.getElementById("info_mf").innerHTML = "始点: " + (s + 1) + " 終点: " + (t + 1) + "の最大フロー/最小カットは" + f + "です";
+                let mf_cmp = new Array(N).fill(-1);
+                mf_cmp[s] = 0;
+                mf_cmp[t] = 1;
+                graph_mf.append(general_graph_template(N, mf_cmp, E2, true, true));
+                graph_mc.append(general_graph_template(N, cmp, E, true, true));
+                activate_zoom("graph_mf");
+                activate_zoom("graph_mc");
+            }
+         </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    </body>
+</html>
