@@ -714,7 +714,10 @@ function calc_bipartite_graph(N, E) {
             return [false, []];
         }
     }
-    let cc = new Array(2 * N, 0);
+    let cc = new Array();
+    for (let i = 0; i < 2 * N; i++) {
+        cc.push([]);
+    }
     for (let i = 0; i < 2 * N; i++) {
         let r = uf.find(i);
         cc[r].push(i);
@@ -722,7 +725,7 @@ function calc_bipartite_graph(N, E) {
     let ans = new Array(N).fill(-1);
     for (let i = 0; i < 2 * N; i++) {
         if (cc[i].length == 0) continue;
-        let t = (cc[i][0] >= 0 ? cc[i][0] - N : cc[i][0]);
+        let t = (cc[i][0] >= N ? cc[i][0] - N : cc[i][0]);
         if (ans[t] != -1) continue;
         for (let j = 0; j < cc[i].length; j++) {
             let v = cc[i][j];

@@ -21,7 +21,7 @@ function random_array(N, L, R, is_unique) {
         for (let i = 0; i < N; i++) {
             let x;
             while (true) {
-                x = random_int(L, R);
+                x = random_int_range(L, R);
                 if (used.has(x)) continue;
                 used.add(x);
                 res.push(x);
@@ -32,7 +32,7 @@ function random_array(N, L, R, is_unique) {
     } else {
         let res = [];
         for (let i = 0; i < N; i++) {
-            res.push(random_int(L, R));
+            res.push(random_int_range(L, R));
         }
         return res;
     }

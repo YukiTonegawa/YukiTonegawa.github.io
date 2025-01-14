@@ -102,7 +102,7 @@ function cartesian_tree_template(V) {
         data_link.push(d);
     }
     data["links"] = data_link;
-    const width = 700;
+    const width = 600;
     const height = 600;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
     const links = data.links.map(d => ({...d}));
@@ -203,7 +203,9 @@ function cartesian_tree_template(V) {
 // g: グループ(-1だと黒縁の無色, それ以外は値に合わせたschemePastel1の色)
 // E: 辺
 // dist : 最短距離, フロー表示用 始点から左から並べていく
+let called_cnt = 0;
 function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
+    called_cnt++;
     let orb = new Map(); // 同じ軌道を使う辺がいくつあるか
     let data = {"nodes": [], "links": [], "loops": []};
     let data_node = [];
@@ -315,7 +317,7 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
     if (is_directed) {
         svg.append("svg:defs")
         .selectAll("marker")
-        .data(["end"])
+        .data(["end" + called_cnt])
         .enter()
         .append("svg:marker")
         .attr("id", String)
@@ -331,7 +333,7 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
 
         svg.append("svg:defs")
         .selectAll("marker")
-        .data(["loop_end"])
+        .data(["loop_end" + called_cnt])
         .enter()
         .append("svg:marker")
         .attr("id", String)
@@ -345,8 +347,8 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
         .attr("d", "M0,-5L10,0L0,5")
         .attr("fill", "gray");
 
-        link.attr("marker-end", "url(#end)");
-        loop.attr("marker-end", "url(#loop_end)");
+        link.attr("marker-end", "url(#end" + called_cnt + ")");
+        loop.attr("marker-end", "url(#loop_end" + called_cnt + ")");
     }
 
     const label_link = svg.append("g")
