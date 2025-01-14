@@ -8,3 +8,20 @@ function activate_copy_button(text_id, button_id) {
     });
 }
 
+function cmp_to_string(cmp) {
+    let mp = new Map();
+    for (let i = 0; i < cmp.length; i++) {
+        if (!mp.has(cmp[i])) {
+            mp.set(cmp[i], []);
+        }
+        mp.get(cmp[i]).push(i);
+    }
+    let result = mp.size + "\n";
+    for (const [id, ar] of mp) {
+        let cnt = ar.length;
+        for (let j = 0; j < cnt; j++) {
+            result += (ar[j] + 1) + (j + 1 == cnt ? "\n" : " ");
+        }
+    }
+    return result;
+}

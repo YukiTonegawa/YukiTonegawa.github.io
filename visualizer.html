@@ -70,31 +70,33 @@
         <div class="tab-content" id="TabContent">
             <div class="tab-pane fade show active my-5" id="sequence-tab-pane" role="tabpanel" aria-labelledby="sequence-tab" tabindex="0">
                 
-                <div class="container-sm" style="width:65%;">
-                    <!-- ランダム生成 -->
-                    <div class="accordion mb-3">
-                        <div class="accordion-item" id="acc-random-sequence">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button bg bg-dark-subtle" type="button" data-bs-toggle="collapse" data-bs-target="#random-sequence" aria-expanded="true" aria-controls="random-sequence">
-                                    ランダム生成
-                                </button>
-                            </h2>
-                            <div id="random-sequence" class="accordion-collapse collapse" data-bs-parent="#acc-random-sequence">
-                                <div class="accordion-body">
-                                    <div class="d-flex mb-3">
-                                        <div class="form-group col-md-3">
-                                            <label for="random-sequence-len" class="form-label">長さ</label>
-                                            <input class="form-control border border-dark" id="random-sequence-len">
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-4 me-5">
+                        <!-- ランダム生成 -->
+                        <div class="accordion mb-3">
+                            <div class="accordion-item" id="acc-random-sequence">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg bg-dark-subtle" type="button" data-bs-toggle="collapse" data-bs-target="#random-sequence" aria-expanded="true" aria-controls="random-sequence">
+                                        ランダム生成
+                                    </button>
+                                </h2>
+                                <div id="random-sequence" class="accordion-collapse collapse" data-bs-parent="#acc-random-sequence">
+                                    <div class="accordion-body">
+                                        <div class="d-flex justify-content-center">
+                                            <div class="form-group col-md-4">
+                                                <label for="random-sequence-len" class="form-label">長さ</label>
+                                                <input class="form-control border border-dark" id="random-sequence-len">
+                                            </div>
+                                            <div class="form-group col-md-4 mx-2">
+                                                <label for="random-sequence-lower" class="form-label">下限</label>
+                                                <input class="form-control border border-dark" id="random-sequence-lower">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="random-sequence-upper" class="form-label">上限</label>
+                                                <input class="form-control border border-dark" id="random-sequence-upper">
+                                            </div>
                                         </div>
-                                        <div class="form-group col-md-3 mx-2">
-                                            <label for="random-sequence-lower" class="form-label">下限</label>
-                                            <input class="form-control border border-dark" id="random-sequence-lower">
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label for="random-sequence-upper" class="form-label">上限</label>
-                                            <input class="form-control border border-dark" id="random-sequence-upper">
-                                        </div>
-                                        <span class="mt-4 ms-4">
+                                        <span class="ms-1">
                                             <div class="form-check">
                                                 <input class="form-check-input border border-dark" type="checkbox" id="random-sequence-is-unique">
                                                 <label class="form-check-label" for="random-sequence-is-unique">重複なし</label>
@@ -104,21 +106,22 @@
                                                 <label class="form-check-label" for="random-sequence-is-asc">単調非減少</label>
                                             </div>
                                         </span>
+                                        <button class="btn btn-primary mx-1 mt-2" id="random-sequence-btn">生成</button>
+                                        <div id="error-random-sequence"></div>
                                     </div>
-                                    <button class="btn btn-primary mx-1" id="random-sequence-btn">生成</button>
-                                    <div id="error-random-sequence"></div>
                                 </div>
                             </div>
-                        </div>
-                    </div>   
+                        </div>   
 
-                    <!-- 入力 -->
-                    <div class="mb-3">
-                        <label for="input-sequence" class="form-label"><strong>数列をランダム生成するか入力してください</strong></label>
-                        <textarea class="form-control border border-dark" id="input-sequence" rows="6" placeholder="N&#13;&#10;a_1 a_2 a_3 ... a_N&#13;&#10;&#13;&#10;例&#13;&#10;5&#13;&#10;3 4 5 2 1"></textarea>
-                        <button id="btn-sequence" class="btn btn-primary mt-3">決定</button>
-                        <div id="error-sequence"></div>
+                        <!-- 入力 -->
+                        <div class="mb-3">
+                            <label for="input-sequence" class="form-label"><strong>数列をランダム生成するか入力してください</strong></label>
+                            <textarea class="form-control border border-dark" id="input-sequence" rows="10" placeholder="N&#13;&#10;a_1 a_2 a_3 ... a_N&#13;&#10;&#13;&#10;例&#13;&#10;5&#13;&#10;3 4 5 2 1"></textarea>
+                            <button id="btn-sequence" class="btn btn-primary mt-3">決定</button>
+                            <div id="error-sequence"></div>
+                        </div>
                     </div>
+                    <div id="histogram_graph"></div>
                 </div>
                 
                 <!-- sequence info -->
@@ -188,12 +191,6 @@
                             <div class="mb-3">
                                 <textarea class="form-control border border-dark z-0" id="max-subarray-textarea" rows="3" readonly></textarea>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card" id="histogram-pane">
-                        <h5 class="card-header bg bg-dark-subtle">棒グラフ</h5>
-                        <div class="card-body d-flex justify-content-around">
-                            <div id="histogram_graph"></div>
                         </div>
                     </div>
                     <div class="card">
@@ -313,12 +310,14 @@
                     <div class="card">
                         <h5 class="card-header bg bg-dark-subtle">連結成分</h5>
                         <div class="card-body d-flex justify-content-evenly">
+
                             <div class="col-md-5 me-4">
+                                <div class="mt-5 mb-1">1行目に連結成分の数 <br> 2行目以降に各成分の要素が出力されます</div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-cc-copy">Copy</button>
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control border border-dark z-0" id="info-cc" rows="3" readonly></textarea>
+                                    <textarea class="form-control border border-dark z-0" id="info-cc" rows="16" readonly></textarea>
                                 </div>
                             </div>
                             <div id="graph_cc"></div>
@@ -328,11 +327,12 @@
                         <h5 class="card-header bg bg-dark-subtle">2辺連結成分</h5>
                         <div class="card-body d-flex justify-content-evenly">
                             <div class="col-md-5 me-4">
+                                <div class="mt-5 mb-1">1行目に2辺連結成分の数 <br> 2行目以降に各成分の要素が出力されます</div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-tecc-copy">Copy</button>
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control border border-dark z-0" id="info-tecc" rows="3" readonly></textarea>
+                                    <textarea class="form-control border border-dark z-0" id="info-tecc" rows="16" readonly></textarea>
                                 </div>
                             </div>
                             <div id="graph_tecc"></div>
@@ -343,13 +343,13 @@
                         <h5 class="card-header bg bg-dark-subtle">彩色数</h5>
                         <div class="card-body d-flex justify-content-evenly">
                             <div class="col-md-5 me-4">
+                                <div class="mt-5 mb-1">1行目に彩色数 <br> 2行目以降に各色の要素が出力されます</div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-chromatic-copy">Copy</button>
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control border border-dark z-0" id="info-chromatic" rows="3" readonly></textarea>
+                                    <textarea class="form-control border border-dark z-0" id="info-chromatic" rows="16" readonly></textarea>
                                 </div>
-                                <div id="chromatic_number"></div>
                             </div>
                             <div id="graph_chromatic"></div>
                         </div>
@@ -359,13 +359,13 @@
                         <h5 class="card-header bg bg-dark-subtle">最大マッチング</h5>
                         <div class="card-body d-flex justify-content-evenly">
                             <div class="col-md-5 me-4">
+                                <div class="mt-5 mb-1">1行目にマッチング数<br> 2行目以降にペアが出力されます</div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-matching-copy">Copy</button>
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control border border-dark z-0" id="info-matching" rows="3" readonly></textarea>
+                                    <textarea class="form-control border border-dark z-0" id="info-matching" rows="16" readonly></textarea>
                                 </div>
-                                <div id="matching_number"></div>
                             </div>
                             <div id="graph_matching"></div>
                         </div>
@@ -375,11 +375,12 @@
                         <h5 class="card-header bg bg-dark-subtle">補グラフ</h5>
                         <div class="card-body d-flex justify-content-evenly">
                             <div class="col-md-5 me-4">
+                                <div class="mt-5 mb-1">1行目に頂点数と辺の数 <br> 2行目以降に辺が出力されます</div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-complement-copy">Copy</button>
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control border border-dark z-0" id="info-complement" rows="3" readonly></textarea>
+                                    <textarea class="form-control border border-dark z-0" id="info-complement" rows="16" readonly></textarea>
                                 </div>
                                 <div id="matching_number"></div>
                             </div>
@@ -464,11 +465,12 @@
                         <h5 class="card-header bg bg-dark-subtle">強連結成分</h5>
                         <div class="card-body d-flex justify-content-evenly">
                             <div class="col-md-5 me-4">
+                                <div class="mt-5 mb-1">1行目に強連結成分の数 <br> 2行目以降に各成分の要素が出力されます</div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-scc-copy">Copy</button>
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control border border-dark z-0" id="info-scc" rows="3" readonly></textarea>
+                                    <textarea class="form-control border border-dark z-0" id="info-scc" rows="16" readonly></textarea>
                                 </div>
                             </div>
                             <div id="graph_scc"></div>
@@ -478,31 +480,45 @@
                         <h5 class="card-header bg bg-dark-subtle">最短距離</h5>
                         <div class="card-body d-flex justify-content-evenly">
                             <div class="col-md-5 me-4">
+                                <div class="d-flex mt-4">
+                                    <div class="col-md-3">
+                                        <input class="form-control border border-dark" id="dijkstra-s" placeholder="始点: 1">
+                                    </div>
+                                    <button id="btn-dijkstra-s" class="btn btn-primary ms-2">決定</button>
+                                </div>
+                                
+                                <div class="mt-5 mb-1">いずれかの頂点への最短経路に含まれる可能性のある辺のみ表示します</div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-dijkstra-copy">Copy</button>
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control border border-dark z-0" id="info-dijkstra" rows="3" readonly></textarea>
+                                    <textarea class="form-control border border-dark z-0" id="info-dijkstra" rows="14" readonly></textarea>
                                 </div>
                             </div>
                             <div id="graph_dijkstra"></div>
                         </div>
                     </div>
                     <div class="card">
-                        <h5 class="card-header bg bg-dark-subtle">最大フロー / 最小カット (s-t固定) </h5>
-                        <div class="card-body d-flex justify-content-evenly">
-                            <div class="col-md-5 me-4">
-                                <div class="d-flex justify-content-end">
-                                    <button type="button" class="btn btn-outline-dark z-1 position-absolute bottom-30" id="btn-mfmc-copy">Copy</button>
+                        <h5 class="card-header bg bg-dark-subtle">最大フロー / 最小カット</h5>
+                        <div class="card-body">
+                            <div class="d-flex my-4 ms-4">
+                                <div class="col-md-1">
+                                    <input class="form-control border border-dark" id="mfmc-s" placeholder="始点: 1">
                                 </div>
-                                <div class="mb-3">
-                                    <textarea class="form-control border border-dark z-0" id="info-mfmc" rows="3" readonly></textarea>
+                                <div class="col-md-1 ms-2">
+                                    <input class="form-control border border-dark" id="mfmc-t" placeholder="終点: 2">
                                 </div>
-                                <div id="info_mf"></div>
+                                <button id="btn-mfmc-st" class="btn btn-primary ms-2">決定</button>
                             </div>
-                            <span>
-                                <div id="graph_mf"></div>
-                                <div id="graph_mc"></div>
+                            <span class="d-flex justify-content-evenly">
+                                <div>
+                                    <div>最大フロー</div>
+                                    <div id="graph_mf"></div>
+                                </div>
+                                <div>
+                                    <div>最小カット</div>
+                                    <div id="graph_mc"></div>
+                                </div>
                             </span>
                         </div>
                     </div>
@@ -565,6 +581,11 @@
         </div>
         <!-- 整数列のスクリプト -->
         <script>
+            let parameter_plot_maxN = 100;
+            let parameter_plot_maxM = 100;
+            let parameter_gen_maxN = 500000;
+            let parameter_gen_maxM = 500000;
+
             let currentV = [];
             function gen_random_sequence() {
                 document.getElementById("error-random-sequence").innerHTML = "";
@@ -575,6 +596,7 @@
                 let asc = document.getElementById("random-sequence-is-asc").checked;
                 let err = isNaN(N) || isNaN(L) || isNaN(R);
                 err |= (unq ? R - L + 1 < N : L > R);
+                err |= (N < 0) || (N > parameter_gen_maxN);
                 if (err) {
                    document.getElementById("error-random-sequence").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
                 } else {
@@ -620,6 +642,10 @@
                 let [f, V] = get_input_sequence();
                 if (!f) {
                     document.getElementById("error-sequence").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
+                    return;
+                }
+                if (V.length > parameter_plot_maxN) {
+                    document.getElementById("error-sequence").innerHTML = "<FONT color=\"red\">サイズがデカすぎます!</FONT>";
                     return;
                 }
                 reset_sequence();
@@ -827,7 +853,7 @@
                 }
             }
             document.getElementById("random-graph-is-weighted").addEventListener("change", toggle_graph_weight_form);
-
+            
             function get_random_graph() {
                 document.getElementById("error-random-graph").innerHTML = "";
                 let N = parseInt(document.getElementById("random-graph-n").value);
@@ -838,7 +864,12 @@
                 let use_selfedge = document.getElementById("random-graph-use-selfedge").checked;
                 let use_multiedge = document.getElementById("random-graph-use-multiedge").checked;
                 let valid = true;
-                if (isNaN(N) || isNaN(M) || (is_connected && M < N - 1)) valid = false;
+                if (isNaN(N) || isNaN(M) || (is_connected && M < N - 1)) {
+                    valid = false;
+                }
+                if (N < 0 || M < 0 || N > parameter_gen_maxN || M > parameter_gen_maxM) {
+                    valid = false;
+                }
                 if (is_weighted) {
                     minw = parseInt(document.getElementById("random-graph-weight-min").value);
                     maxw = parseInt(document.getElementById("random-graph-weight-max").value);
@@ -870,9 +901,7 @@
                 d3.selectAll("#graph_cc svg").remove();
                 d3.selectAll("#graph_tecc svg").remove();
                 d3.selectAll("#graph_chromatic svg").remove();
-                document.getElementById("chromatic_number").innerHTML = "";
                 d3.selectAll("#graph_matching svg").remove();
-                document.getElementById("matching_number").innerHTML = "";
                 d3.selectAll("#graph_complement svg").remove();
             }
 
@@ -909,6 +938,10 @@
                     document.getElementById("error-graph").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
                     return;
                 }
+                if (N > parameter_plot_maxN || E.length > parameter_plot_maxM) {
+                    document.getElementById("error-graph").innerHTML = "<FONT color=\"red\">サイズがデカすぎます!</FONT>";
+                    return;
+                }
                 reset_graph();
                 currentN = N;
                 currentE = E;
@@ -932,19 +965,23 @@
                 let cc = calc_connected_component(N, E);
                 graph_cc.append(general_graph_template(N, cc, E, false, false));
                 activate_zoom("graph_cc");
+                document.getElementById("info-cc").value = cmp_to_string(cc);
+                activate_copy_button("info-cc", "btn-cc-copy");
             }
             
             function show_tecc(N, E) {
                 let tecc = calc_two_edge_connected_component(N, E);
                 graph_tecc.append(general_graph_template(N, tecc, E, false, false));
                 activate_zoom("graph_tecc");
+                document.getElementById("info-tecc").value = cmp_to_string(tecc);
+                activate_copy_button("info-tecc", "btn-tecc-copy");
             }
             
             function show_chromatic(N, E) {
                 for (let i = 0; i < E.length; i++) {
                     let e = E[i];
                     if (e.s == e.t) {
-                        document.getElementById("chromatic_number").innerHTML = "自己辺がある場合表示されません";
+                        document.getElementById("info-chromatic").value = "自己辺がある場合表示されません";
                         graph_chromatic.append(general_graph_template(0, [], [], false, false));
                         return;
                     }
@@ -952,7 +989,6 @@
                 if (N <= 20) {
                     let C = calc_chromatic_number(N, E);
                     let c = C.length;
-                    document.getElementById("chromatic_number").innerHTML = "彩色数は" + c + "です";
                     let cmp = new Array(N);
                     for (let i = 0; i < c; i++) {
                         for (let j = 0; j < C[i].length; j++) {
@@ -961,24 +997,18 @@
                     }
                     graph_chromatic.append(general_graph_template(N, cmp, E, false, false));
                     activate_zoom("graph_chromatic");
+                    document.getElementById("info-chromatic").value = cmp_to_string(cmp);
+                    activate_copy_button("info-chromatic", "btn-chromatic-copy");
                 } else {
                     let [f, cc] = calc_bipartite_graph(N, E);
                     if (!f) {
-                        document.getElementById("chromatic_number").innerHTML = "彩色数は3以上です(N > 20かつ彩色数が3以上の場合正確な値が求められません)";
                         graph_chromatic.append(general_graph_template(0, [], [], false, false));
+                        document.getElementById("info-chromatic").value = "彩色数は3以上です\nN > 20かつ彩色数が3以上の場合正確な値が求められません";
                     } else {
-                        let cnt0 = 0, cnt1 = 0;
-                        for (let i = 0; i < N; i++) {
-                            if (!cc[i]) {
-                                cnt0++;
-                            } else {
-                                cnt1++;
-                            }
-                        }
-                        let c = (cnt0 > 0) + (cnt1 > 0);
-                        document.getElementById("chromatic_number").innerHTML = "彩色数は" + c + "です";
                         graph_chromatic.append(general_graph_template(N, cc, E, false, false));
                         activate_zoom("graph_chromatic");
+                        document.getElementById("info-chromatic").value = cmp_to_string(cc);
+                        activate_copy_button("info-chromatic", "btn-chromatic-copy");
                     }
                 }
             }
@@ -989,15 +1019,29 @@
                 for (let i = 0; i < N; i++) {
                     cmp[i] = (mate[i] == -1 ? -1 : Math.min(i, mate[i]));
                 }
-                document.getElementById("matching_number").innerHTML = "最大マッチング数は" + m + "です";
                 graph_matching.append(general_graph_template(N, cmp, E, false, false));
                 activate_zoom("graph_matching");
+
+                let result = m + "\n";
+                for (let i = 0; i < N; i++) {
+                    if (cmp[i] == -1 || cmp[i] == i) continue;
+                    result += (i + 1) + " " + (cmp[i] + 1) + "\n";
+                }
+                document.getElementById("info-matching").value = result;
+                activate_copy_button("info-matching", "btn-matching-copy");
             }
 
             function show_complement_graph(N, E) {
                 let E2 = calc_complement_graph(N, E);
                 graph_complement.append(general_graph_template(N, new Array(N).fill(-1), E2, false, false));
                 activate_zoom("graph_complement");
+                let result = N + " " + E2.length + "\n";
+                for (let i = 0; i < E2.length; i++) {
+                    let e = E2[i];
+                    result += (e.s + 1) + " " + (e.t + 1) + "\n";
+                }
+                document.getElementById("info-complement").value = result;
+                activate_copy_button("info-complement", "btn-complement-copy");
             }
 
             function show_initial_graph() {
@@ -1051,7 +1095,12 @@
                 let use_selfedge = document.getElementById("random-directed-graph-use-selfedge").checked;
                 let use_multiedge = document.getElementById("random-directed-graph-use-multiedge").checked;
                 let valid = true;
-                if (isNaN(N) || isNaN(M)) valid = false;
+                if (isNaN(N) || isNaN(M)) {
+                    valid = false;
+                }
+                if (N < 0 || M < 0 || N > parameter_gen_maxN || M > parameter_gen_maxM) {
+                    valid = false;
+                }
                 if (is_weighted) {
                     minw = parseInt(document.getElementById("random-directed-graph-weight-min").value);
                     maxw = parseInt(document.getElementById("random-directed-graph-weight-max").value);
@@ -1119,12 +1168,18 @@
                     document.getElementById("error-directed-graph").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
                     return;
                 }
+                if (N > parameter_plot_maxN || E.length > parameter_plot_maxM) {
+                    document.getElementById("error-directed-graph").innerHTML = "<FONT color=\"red\">サイズがデカすぎます!</FONT>";
+                    return;
+                }
                 reset_directed_graph();
                 currentN_directed = N;
                 currentE_directed = E;
                 currentW_directed = is_weighted;
                 show_directed_graph(N, E, is_weighted);
                 show_scc(N, E);
+                show_dijkstra(N, E, 0);
+                show_max_flow_min_cut(N, E, 0, 1);
             }
 
             document.getElementById("btn-directed-graph").addEventListener("click", show_input_directed_graph);
@@ -1138,9 +1193,17 @@
                 let cmp = calc_strongly_connected_component(N, E);
                 graph_scc.append(general_graph_template(N, cmp, E, true, false));
                 activate_zoom("graph_scc");
+                document.getElementById("info-scc").value = cmp_to_string(cmp);
+                activate_copy_button("info-scc", "btn-scc-copy");
             }
             
             function show_dijkstra(N, E, s) {
+                if (N == 0) {
+                    document.getElementById("info-dijkstra").value = "";
+                    graph_dijkstra.append(general_graph_template(0, [], [], false, false));
+                    return;
+                }
+                document.getElementById("dijkstra-s").placeholder = "始点: " + (s + 1);
                 let [dist, par] = calc_dijkstra(N, E, s);
                 let E2 = [];
                 let uf = new union_find(N);
@@ -1154,11 +1217,34 @@
                 cmp[s] = 0;
                 graph_dijkstra.append(general_graph_template(N, cmp, E2, true, true, dist));
                 activate_zoom("graph_dijkstra");
+                let result = N + " " + E2.length + "\n";
+                for (let i = 0; i < E2.length; i++) {
+                    let e = E2[i];
+                    result += (e.s + 1) + " " + (e.t + 1) + " " + e.w + "\n";
+                }
+                document.getElementById("info-dijkstra").value = result;
+                activate_copy_button("info-dijkstra", "btn-dijkstra-copy")
             }
 
+            function show_dijkstra_input_s() {
+                let s = parseInt(document.getElementById("dijkstra-s").value);
+                if (isNaN(s) || s < 1 || s > currentN_directed) return;
+                d3.selectAll("#graph_dijkstra svg").remove();
+                show_dijkstra(currentN_directed, currentE_directed, s - 1);
+            }
+
+            document.getElementById("btn-dijkstra-s").addEventListener("click", show_dijkstra_input_s);
+
             function show_max_flow_min_cut(N, E, s, t) {
+                if (s < 0 || t < 0 || s >= N || t >= N) {
+                    graph_mf.append(general_graph_template(0, [], [], false, false));
+                    graph_mc.append(general_graph_template(0, [], [], false, false));
+                    return;
+                }
+                document.getElementById("mfmc-s").placeholder = "始点: " + (s + 1);
+                document.getElementById("mfmc-t").placeholder = "終点: " + (t + 1);
                 let [f, E2, cmp] = calc_max_flow_min_cut(N, E, s, t);
-                document.getElementById("info_mf").innerHTML = "始点: " + (s + 1) + " 終点: " + (t + 1) + "の最大フロー/最小カットは" + f + "です";
+                //document.getElementById("info_mf").innerHTML = "始点: " + (s + 1) + " 終点: " + (t + 1) + "の最大フロー/最小カットは" + f + "です";
                 let mf_cmp = new Array(N).fill(-1);
                 mf_cmp[s] = 0;
                 mf_cmp[t] = 1;
@@ -1167,6 +1253,19 @@
                 activate_zoom("graph_mf");
                 activate_zoom("graph_mc");
             }
+
+            function show_max_flow_min_cut_input_st() {
+                let s = parseInt(document.getElementById("mfmc-s").value);
+                let t = parseInt(document.getElementById("mfmc-t").value);
+                if (isNaN(s) || s < 1 || s > currentN_directed) return;
+                if (isNaN(t) || t < 1 || t > currentN_directed) return;
+                if (s == t) return;
+                d3.selectAll("#graph_mf svg").remove();
+                d3.selectAll("#graph_mc svg").remove();
+                show_max_flow_min_cut(currentN_directed, currentE_directed, s - 1, t - 1);
+            }
+
+            document.getElementById("btn-mfmc-st").addEventListener("click", show_max_flow_min_cut_input_st);
 
             function show_initial_directed_graph() {
                 let N = 5;
@@ -1182,9 +1281,8 @@
                 currentW_directed = false;
                 show_directed_graph(N, E, false);
                 show_scc(N, E);
-                graph_dijkstra.append(general_graph_template(0, [], [], false, false));
-                graph_mf.append(general_graph_template(0, [], [], false, false));
-                graph_mc.append(general_graph_template(0, [], [], false, false));
+                show_dijkstra(N, E, 0);
+                show_max_flow_min_cut(N, E, 0, 1);
             }
 
             show_initial_directed_graph();
@@ -1192,7 +1290,7 @@
 
         <!-- 幾何のスクリプト -->
         <script>
-            
+
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>

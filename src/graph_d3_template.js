@@ -8,7 +8,7 @@ function histogram_template(V) {
         };
         data.push(d);
     }
-    const width = 700;
+    const width = 630;
     const height = 600;
     const marginTop = 20;
     const marginRight = 20;
