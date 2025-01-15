@@ -102,7 +102,7 @@ function cartesian_tree_template(V) {
         data_link.push(d);
     }
     data["links"] = data_link;
-    const width = 600;
+    const width = 1000;
     const height = 600;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
     const links = data.links.map(d => ({...d}));
@@ -204,7 +204,7 @@ function cartesian_tree_template(V) {
 // E: 辺
 // dist : 最短距離, フロー表示用 始点から左から並べていく
 let called_cnt = 0;
-function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
+function general_graph_template(N, g, E, is_directed, is_weighted, H = -1, W = -1) {
     called_cnt++;
     let orb = new Map(); // 同じ軌道を使う辺がいくつあるか
     let data = {"nodes": [], "links": [], "loops": []};
@@ -218,21 +218,6 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
             "group": g[i],
         }
         data_node.push(d);
-    }
-
-    if (dist.length == N) {
-        let tmp = [];
-        for (let i = 0; i < N; i++) tmp.push({"d": dist[i], "v": i});
-        tmp.sort(function(a, b) { return a["d"] - b["d"]; });
-        let ord = new Array(N);
-        for (let i = 0; i < N; i++) {
-            let v = tmp[i]["v"];
-            ord[v] = i;
-        }
-
-        for (let i = 0; i < N; i++) {
-            data_node[i]["cx"] = ord[i] * 100;
-        }
     }
 
     data["nodes"] = data_node;
@@ -280,8 +265,8 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
     data["links"] = data_link;
     data["loops"] = data_loop;
 
-    const width = 600;
-    const height = 500;
+    const width = (W == -1 ? 600 : W);
+    const height = (H == -1 ? 500 : H);
     const color = d3.scaleOrdinal(d3.schemePastel1);
     const links = data.links.map(d => ({...d}));
     const loops = data.loops.map(d => ({...d}));
@@ -353,7 +338,7 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
 
     const label_link = svg.append("g")
         .attr("stroke", "#ff9")
-        .attr("stroke-width", 0.1)
+        .attr("stroke-width", 0.0)
         .selectAll()
         .data(links)
         .join("text")
@@ -363,7 +348,7 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
 
     const label_loop = svg.append("g")
         .attr("stroke", "#ff9")
-        .attr("stroke-width", 0.1)
+        .attr("stroke-width", 0.0)
         .selectAll()
         .data(loops)
         .join("text")
@@ -387,7 +372,7 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
 
     const label_node = svg.append("g")
         .attr("stroke", "#ff9")
-        .attr("stroke-width", 0.1)
+        .attr("stroke-width", 0.0)
         .selectAll()
         .data(nodes)
         .join("text")
@@ -525,10 +510,146 @@ function general_graph_template(N, g, E, is_directed, is_weighted, dist = []) {
     return svg.node();
 }
 
+function geo_2d_point_template(P, E, is_weighted = false, H = -1, W = -1) {
+    let N = P.length;
+    let data = {"nodes": [], "links": []};
+    let data_node = [];
+    let data_link = [];
+    let maxidx = 0;
+    for (let i = 0; i < P.length; i++) {
+        let tmp = Math.max(Math.abs(P[i][0]), Math.abs(P[i][1]));
+        if (maxidx < tmp) maxidx = tmp;
+    }
+    if (maxidx == 0) maxidx = 1;
+
+    for (let i = 0; i < N; i++) {
+        let d = {
+            "id": i + 1,
+            "x": P[i][0],
+            "y": P[i][1],
+        }
+        data_node.push(d);
+    }
+    data["nodes"] = data_node;
+    for (let i = 0; i < E.length; i++) {
+        let e = E[i];
+        let d = {
+            "source": e.s + 1,
+            "target": e.t + 1,
+            "value": e.w,
+        }
+        data_link.push(d);
+    }
+    data["links"] = data_link;
+    const width = (W == -1 ? 1100 : W);
+    const height = (H == -1 ? 700 : H);
+    const links = data.links.map(d => ({...d}));
+    const nodes = data.nodes.map(d => ({...d}));
+
+    const svg = d3.create("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", [0, 0, width, height])
+        .attr("style", "max-width: 100%; height: auto;");
+
+    let x = d3.scaleLinear().domain([-maxidx * width / height, maxidx * width / height]).range([0, width]);
+    let y = d3.scaleLinear().domain([maxidx, -maxidx]).range([0, height]); // 上がy軸正
+
+    let axis_x = d3.axisBottom(x)
+        .ticks(15 * width / height)
+        .tickSize(height)
+        .tickPadding(8 - height);
+ 
+    let axis_y = d3.axisRight(y)
+        .ticks(15)
+        .tickSize(width)
+        .tickPadding(8 - width);
+
+    let gX = svg.append("g").call(axis_x).attr("opacity", 0.4);
+    let gY = svg.append("g").call(axis_y).attr("opacity", 0.4);
+ 
+    svg.call(d3.zoom()
+        .scaleExtent([0.3, 1000000])
+        .on("zoom", function(e) {
+            node.attr("transform", e.transform);
+            label_node.attr("transform", e.transform);
+            link.attr("transform", e.transform);
+            label_link.attr("transform", e.transform);
+            gX.call(axis_x.scale(e.transform.rescaleX(x)));
+            gY.call(axis_y.scale(e.transform.rescaleY(y)));
+
+            let scale = Number(e.transform["k"]); // グラフの倍率 初期値1.0
+            node
+                .attr("r", 5.0 / scale);
+            label_node
+                .attr("x", d => x(d.x) + (1 / scale) * 5)
+                .attr("y", d => y(d.y) - (1 / scale) * 5)
+                .attr("font-size", (15.0 / scale) + "px");
+            link
+                .attr("stroke-width", 1.5 / scale);
+
+            label_link
+                .attr("font-size", (15.0 / scale) + "px");
+        }));
+
+    const link = svg.append("g")
+        .attr("stroke", "black")
+        .selectAll()
+        .data(links)
+        .join("line")
+        .attr("stroke-width", 1.5)
+        .attr("x1", d => x(nodes[d.source - 1]["x"]))
+        .attr("y1", d => y(nodes[d.source - 1]["y"]))
+        .attr("x2", d => x(nodes[d.target - 1]["x"]))
+        .attr("y2", d => y(nodes[d.target - 1]["y"]))
+
+    const label_link = svg.append("g")
+        .attr("stroke", "#ff9")
+        .attr("stroke-width", 0.0)
+        .selectAll()
+        .data(links)
+        .join("text")
+        .attr("font-size", "15px")
+        .attr("fill", "black") 
+        .attr("style", "text-anchor:middle;")
+        .attr("x", d => x((nodes[d.source - 1]["x"] + nodes[d.target - 1]["x"]) / 2))
+        .attr("y", d => y((nodes[d.source - 1]["y"] + nodes[d.target - 1]["y"]) / 2));
+    
+    if (is_weighted) {
+        label_link.text(d => d.value);
+    }
+
+    const node = svg.append("g")
+        .selectAll()
+        .data(nodes)
+        .join("circle")
+        .attr("r", 5)
+        .attr("cx", d => x(d.x))
+        .attr("cy", d => y(d.y))
+        .attr("fill", "#1f78b4")
+        .attr("stroke", "gray")
+        .attr("stroke-width", d => 0.0);
+
+    const label_node = svg.append("g")
+        .attr("stroke", "#ff9")
+        .attr("stroke-width", 0.0)
+        .selectAll()
+        .data(nodes)
+        .join("text")
+        .attr("font-size", "15px")
+        .attr("fill", "black") 
+        .attr("x", d => x(d.x) + 5)
+        .attr("y", d => y(d.y) - 5)
+        .attr("style", "text-anchor:middle;")
+        .text(d => d.id);
+
+    return svg.node();
+}
+
 function activate_zoom(id) {
     id = "#" + id + " svg";
     d3.select(id)
-        .call(d3.zoom().on("zoom", function(e) {
+        .call(d3.zoom().scaleExtent([0.3, 3]).translateExtent([[-2000, -2000], [2000, 2000]]).on("zoom", function(e) {
             d3.selectAll(id + " g")
             .attr("transform", e.transform);
         }));

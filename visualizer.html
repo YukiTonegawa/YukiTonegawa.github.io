@@ -11,7 +11,7 @@
         <script src="./src/graph.js"></script>
         <script src="./src/graph_d3_template.js"></script>
         <script src="./src/util.js"></script>
-
+        <script src="./src/geo.js"></script>
     </head>
     <body>
         <!-- menu bar -->
@@ -68,8 +68,8 @@
 
         <!-- tab content -->
         <div class="tab-content" id="TabContent">
+            <!-- 整数列 -->
             <div class="tab-pane fade show active my-5" id="sequence-tab-pane" role="tabpanel" aria-labelledby="sequence-tab" tabindex="0">
-                
                 <div class="d-flex justify-content-center">
                     <div class="col-md-4 me-5">
                         <!-- ランダム生成 -->
@@ -526,59 +526,44 @@
             </div>
             
             <div class="tab-pane fade my-5" id="geo-tab-pane" role="tabpanel" aria-labelledby="geo-tab" tabindex="0">
-                <div class="container-sm" style="width:65%;">
-                    <!-- ランダム生成 -->
-                    <div class="accordion mb-3">
-                        <div class="accordion-item" id="acc-random-sequence">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button bg bg-dark-subtle" type="button" data-bs-toggle="collapse" data-bs-target="#random-geo" aria-expanded="true" aria-controls="random-geo">
-                                    ランダム生成
-                                </button>
-                            </h2>
-                            <div id="random-geo" class="accordion-collapse collapse" data-bs-parent="#acc-random-geo">
-                                <div class="accordion-body">
-                                    <div class="d-flex mb-3">
-                                        <div class="form-group col-md-3">
-                                            <label for="random-geo-n" class="form-label">点の数</label>
-                                            <input class="form-control border border-dark" id="random-geo-n">
+                <div>
+                    <div class="d-flex justify-content-end">
+                        <div class="accordion mx-5 z-2 position-absolute">
+                            <div class="accordion-item" id="acc-option-geo">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg bg-dark-subtle" type="button" data-bs-toggle="collapse" data-bs-target="#option-geo" aria-expanded="true" aria-controls="option-geo">
+                                        オプション
+                                    </button>
+                                </h2>
+                                <div id="option-geo" class="accordion-collapse collapse" data-bs-parent="#acc-option-geo">
+                                    <div class="accordion-body">
+                                        <label for="input-geo" class="form-label"><strong>点または線分を入力してください</strong></label>
+                                        <textarea class="form-control border border-dark" id="input-geo" rows="15" placeholder="N [M=0]&#13;&#10;x1 y1&#13;&#10;...&#13;&#10;xN yN &#13;&#10;s1 t1 [w1]&#13;&#10;...&#13;&#10;sM tM [wM]&#13;&#10;&#13;&#10;例&#13;&#10;3 2&#13;&#10;0 0&#13;&#10;100 0&#13;&#10;50 86.6025&#13;&#10;1 3&#13;&#10;3 2"></textarea>
+                                        <div class="dropdown my-3">
+                                            <button class="btn btn-secondary dropdown-toggle" id="toggle-btn-geo-option" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                表示オプション: シンプル
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" id="btn-geo-option-simple">シンプル</a></li>
+                                                <li><a class="dropdown-item" id="btn-geo-option-convex-hull">凸包</a></li>
+                                                <li><a class="dropdown-item" id="btn-geo-option-upper-hull">上側凸包</a></li>
+                                                <li><a class="dropdown-item" id="btn-geo-option-lower-hull">下側凸包</a></li>
+                                            </ul>
                                         </div>
-                                        
-                                        <span class="mt-4 ms-4">
-                                            <div class="form-check">
-                                                <input class="form-check-input border border-dark" type="checkbox" id="random-sequence-is-unique">
-                                                <label class="form-check-label" for="random-sequence-is-unique">重複なし</label>
-                                            </div>
-                                        </span>
+                                        <button class="btn btn-primary mx-1 mt-2" id="btn-input-geo">決定</button>
+                                        <div id="error-geo"></div>
                                     </div>
-                                    <button class="btn btn-primary mx-1" id="random-geo-btn">生成</button>
-                                    <div id="error-random-geo"></div>
                                 </div>
                             </div>
-                        </div>
-                    </div>   
-
-                    <!-- 入力 -->
-                    <div class="mb-3">
-                        <label for="input-geo" class="form-label"><strong>点群をランダム生成するか入力してください</strong></label>
-                        <textarea class="form-control border border-dark" id="input-geo" rows="3"></textarea>
-                        <button id="btn-geo" class="btn btn-primary mt-3">決定</button>
-                        <div id="error-geo"></div>
+                        </div>   
                     </div>
-                </div>
-                
-                <!-- sequence info -->
-                <div id="geo-cards" class="container-sm mt-5">
-                    <div class="card">
-                        <h5 class="card-header bg bg-dark-subtle">凸包</h5>
-                        <div class="card-body">
-                            <div class="container-sm">
-                                <table class="table"></table>
-                            </div>
-                        </div>
+                    <div class="d-flex justify-content-center mt-5">
+                        <div id="graph_geo" class="mt-3"></div>
                     </div>
                 </div>
             </div>
         </div>
+
         <!-- 整数列のスクリプト -->
         <script>
             let parameter_plot_maxN = 100;
@@ -791,7 +776,7 @@
                 for (let i = 0; i < N; i++) {
                     E.push(new edge(i, V[i] - 1, 1));
                 }
-                graph_functional.append(general_graph_template(N, new Array(N).fill(-1), E, true, false));
+                graph_functional.append(general_graph_template(N, new Array(N).fill(-1), E, true, false, 600, 1000));
                 activate_zoom("graph_functional")
             }
 
@@ -1215,7 +1200,7 @@
                 }
                 let cmp = new Array(N).fill(-1);
                 cmp[s] = 0;
-                graph_dijkstra.append(general_graph_template(N, cmp, E2, true, true, dist));
+                graph_dijkstra.append(general_graph_template(N, cmp, E2, true, true));
                 activate_zoom("graph_dijkstra");
                 let result = N + " " + E2.length + "\n";
                 for (let i = 0; i < E2.length; i++) {
@@ -1244,7 +1229,6 @@
                 document.getElementById("mfmc-s").placeholder = "始点: " + (s + 1);
                 document.getElementById("mfmc-t").placeholder = "終点: " + (t + 1);
                 let [f, E2, cmp] = calc_max_flow_min_cut(N, E, s, t);
-                //document.getElementById("info_mf").innerHTML = "始点: " + (s + 1) + " 終点: " + (t + 1) + "の最大フロー/最小カットは" + f + "です";
                 let mf_cmp = new Array(N).fill(-1);
                 mf_cmp[s] = 0;
                 mf_cmp[t] = 1;
@@ -1290,9 +1274,143 @@
 
         <!-- 幾何のスクリプト -->
         <script>
+            let current_geo_P = [];
+            let current_geo_E = [];
+            let current_geo_W = false;
+            let current_geo_style = "simple";
 
+            function show_initial_geo() {
+                let P = [[0, 0], [100, 0], [50, 86.6025]];
+                let E = [new edge(0, 2, 1), new edge(2, 1, 1)];
+                current_geo_P = P;
+                current_geo_E = E;
+                current_geo_W = false;
+                graph_geo.append(geo_2d_point_template(P, E));
+            }
+
+            show_initial_geo();
+
+            function reset_geo() {
+                d3.selectAll("#graph_geo svg").remove();
+            }
+
+            function get_input_geo() {
+                const row = document.getElementById("input-geo").value.split('\n');
+                if (row.lengtn == 0) return [false, [], [], false];
+                let r0 = row[0].split(' ');
+                if (r0.length < 1 || isNaN(parseInt(r0[0]))) return [false, [], [], false];
+                let N = parseInt(r0[0]);
+                let M = (r0.length == 1 ? 0 : parseInt(r0[1]));
+                if (N < 0 || isNaN(M) || M < 0 || row.length < N + M + 1) return [false, [], [], false];
+                let P = [];
+                let E = [];
+                for (let i = 0; i < N; i++) {
+                    let crow = row[i + 1].split(' ');
+                    if (crow.length < 2) return [false, [], [], false];
+                    let x = parseFloat(crow[0]);
+                    let y = parseFloat(crow[1]);
+                    if (isNaN(x) || isNaN(y)) return [false, [], [], false];
+                    P.push([x, y]);
+                }
+                let is_weighted = false;
+                for (let i = 0; i < M; i++) {
+                    let crow = row[i + 1 + N].split(' ');
+                    if (crow.length < 2) return [false, [], [], false];
+                    let s = parseInt(crow[0]);
+                    let t = parseInt(crow[1]);
+                    let w = 1;
+                    if (crow.length >= 3) {
+                        is_weighted = true;
+                        w = parseFloat(crow[2]);
+                    }
+                    if (isNaN(s) || isNaN(t) || isNaN(w)) return [false, [], [], false];
+                    if (s < 1 || N < s || t < 1 || N < t) return [false, [], [], false];
+                    E.push(new edge(s - 1, t - 1, w));
+                }
+                return [true, P, E, is_weighted];
+            }
+
+            function show_style_simple() {
+                document.getElementById("toggle-btn-geo-option").innerHTML = "表示オプション: シンプル";
+                current_geo_style = "simple";
+            }
+            function show_style_convex_hull() {
+                document.getElementById("toggle-btn-geo-option").innerHTML = "表示オプション: 凸包";
+                current_geo_style = "convex_hull";
+            }
+            function show_style_lower_hull() {
+                document.getElementById("toggle-btn-geo-option").innerHTML = "表示オプション: 下側凸包";
+                current_geo_style = "lower_hull";
+            }
+            function show_style_upper_hull() {
+                document.getElementById("toggle-btn-geo-option").innerHTML = "表示オプション: 上側凸包";
+                current_geo_style = "upper_hull";
+            }
+            
+            document.getElementById("btn-geo-option-simple").addEventListener("click", show_style_simple);
+            document.getElementById("btn-geo-option-convex-hull").addEventListener("click", show_style_convex_hull);
+            document.getElementById("btn-geo-option-upper-hull").addEventListener("click", show_style_upper_hull);
+            document.getElementById("btn-geo-option-lower-hull").addEventListener("click", show_style_lower_hull);
+
+            function show_input_geo() {
+                document.getElementById("error-geo").innerHTML = "";
+                let [ok, P, E, is_weighted] = get_input_geo();
+                if (!ok) {
+                    document.getElementById("error-geo").innerHTML = "<FONT color=\"red\">無効な形式です。</FONT>";
+                    return;
+                }
+                if (P.length > parameter_plot_maxN || E.length > parameter_plot_maxM) {
+                    document.getElementById("error-geo").innerHTML = "<FONT color=\"red\">サイズがデカすぎます!</FONT>";
+                    return;
+                }
+                reset_geo();
+                current_geo_P = P;
+                current_geo_E = E;
+                current_geo_W = is_weighted;
+
+                if (current_geo_style == "simple") {
+                    graph_geo.append(geo_2d_point_template(P, E, is_weighted));
+                } else if (current_geo_style == "convex_hull") {
+                    let H = convex_hull(P);
+                    let HE = [];
+                    let len = H.length;
+                    if (len >= 2) {
+                        for (let i = 0; i < len; i++) {
+                            let a = H[i][2];
+                            let b = H[(i + 1) % len][2];
+                            HE.push(new edge(a, b, 1));
+                        }
+                    }
+                    graph_geo.append(geo_2d_point_template(P, HE, false));
+                } else if (current_geo_style == "upper_hull") {
+                    let H = upper_hull(P);
+                    let HE = [];
+                    let len = H.length;
+                    if (len >= 2) {
+                        for (let i = 0; i < len - 1; i++) {
+                            let a = H[i][2];
+                            let b = H[(i + 1) % len][2];
+                            HE.push(new edge(a, b, 1));
+                        }
+                    }
+                    graph_geo.append(geo_2d_point_template(P, HE, false));
+                } else if (current_geo_style == "lower_hull") {
+                    let H = lower_hull(P);
+                    let HE = [];
+                    let len = H.length;
+                    if (len >= 2) {
+                        for (let i = 0; i < len - 1; i++) {
+                            let a = H[i][2];
+                            let b = H[(i + 1) % len][2];
+                            HE.push(new edge(a, b, 1));
+                        }
+                    }
+                    graph_geo.append(geo_2d_point_template(P, HE, false));
+                }
+            }
+
+            document.getElementById("btn-input-geo").addEventListener("click", show_input_geo);            
         </script>
-
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     </body>
 </html>
