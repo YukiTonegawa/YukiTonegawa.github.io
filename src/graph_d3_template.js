@@ -515,10 +515,15 @@ function geo_2d_point_template(P, E, is_weighted = false, H = -1, W = -1) {
         ymax = Math.max(ymax, P[i][1]);
         ymin = Math.min(ymin, P[i][1]);
     }
-
     if (P.length == 0) {
         xmax = 1, xmin = 0;
         ymax = 1, ymin = 0;
+    }
+    if (xmax == xmin && ymax == ymin) {
+        xmax += 0.5;
+        xmin -= 0.5;
+        ymax += 0.5;
+        ymin -= 0.5;
     }
     if ((xmax - xmin) > (ymax - ymin) * width / height) {
         let rem = (xmax - xmin) / width * height - (ymax - ymin);
