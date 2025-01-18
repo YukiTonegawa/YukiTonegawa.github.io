@@ -11,7 +11,7 @@
     <body>
         <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="../index.html">
+                <a class="navbar-brand" href="./index.html">
                     <FONT color="#ffc107">スパゲッティ屋さん</FONT>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#Mynavbar" aria-controls="Mynavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,8 +19,8 @@
                 </button>
                 <div class="collapse navbar-collapse" id="Mynavbar">
                     <div class="navbar-nav me-lg-auto">
-                        <a class="nav-link" aria-current="page" href="../visualizer.html">Kyopro Visualizer</a>
-                        <a class="nav-link" href="../library.html">Library</a>
+                        <a class="nav-link" aria-current="page" href="./visualizer.html">Kyopro Visualizer</a>
+                        <a class="nav-link" href="./library.html">Library</a>
                     </div>
                     <div class="navbar-nav">
                         <a class="nav-link active" href="https://github.com/YukiTonegawa/YukiTonegawa.github.io"  target="_blank">
@@ -32,37 +32,24 @@
                 </div>
             </div>
         </nav>
-
-
-
-        <h1 class="mx-5 my-5">永続遅延セグ木</h1>
-
-        <div class="container shadow-lg p-3 bg-body-tertiary rounded">
-            <h3>概要</h3>
+        
+        <div>
+            <h1 class="mx-3 my-3 mb-5">Kyopro Visualizerの各種制約</h1>
             <div>
-                省メモリメモ
+                <h2 class="mx-3 my-3 mb-3">サイズ</h2>
                 <ul>
-                    <li>各ノードの左右の子をintで持つ(AtCoder環境だと1個あたり8バイトから4バイトにできる)</li>
-                    <li>左, 右部分木への作用素を分けて持つと区間クエリ時にコピーするノード数が減る(?)</li>
+                    <li>ランダム生成はサイズ(要素数, 頂点数, 辺の数など)500000以下なら実行されます</li>
+                    <li>描画はサイズ100以下なら実行されます</li>
+                </ul>
+
+                <h2 class="mx-3 my-3 mb-3">数値</h2>
+                <ul>
+                    <li>ほぼ全ての箇所(P-recursive以外)でJavascriptのNumber(64bit浮動小数点型)を使っています<br>入力や計算過程でNumber.MAX_SAFE_INTEGER(= 2^53 - 1)を超えると誤差により正しくない結果が表示される可能性があります</li>
+                    <li>あくまで問題のサンプルケースを試す程度に使ってください</li>
                 </ul>
             </div>
         </div>
-        <div class="container shadow-lg p-3 bg-body-tertiary rounded">
-            <h3>操作</h3>
-            <ul>
-                
-            </ul>
-        </div>
 
-        <div class="container shadow-lg p-3 bg-body-tertiary rounded">
-            <h3>実装</h3>
-            <script src="https://gist.github.com/YukiTonegawa/69242f593050a8599928eb0dafd62e6a.js"></script>
-        </div>
-        <div class="container shadow-lg p-3 bg-body-tertiary rounded">
-            <h3>使用例1</h3>
-            <a href="https://judge.yosupo.jp/submission/262189">提出(Library Checker)</a>
-            <script src="https://gist.github.com/YukiTonegawa/20b1196276e2409e6fe1a6f19eac5203.js"></script>
-        </div>
-
+        <a href="./visualizer.html" class="mt-3 ms-3">戻る</a>
     </body>
 </html>
