@@ -176,7 +176,7 @@ function cartesian_tree_template(V) {
         .attr("x", d => x(d.x))
         .attr("y", d => y(d.y + 0.05))
         .attr("fill", "black") 
-        .attr("style", "text-anchor:middle;")
+        .attr("style", "text-anchor:middle;user-select:none;")
         .text(d => d.value);
 
     const border_width = 1;
@@ -326,24 +326,20 @@ function general_graph_template(N, g, E, is_directed, is_weighted, H = -1, W = -
     }
 
     const label_link = svg.append("g")
-        .attr("stroke", "#ff9")
-        .attr("stroke-width", 0.0)
         .selectAll()
         .data(links)
         .join("text")
         .attr("font-size", "10px")
         .attr("fill", "black") 
-        .attr("style", "text-anchor:middle;")
+        .attr("style", "text-anchor:middle;user-select:none;")
 
     const label_loop = svg.append("g")
-        .attr("stroke", "#ff9")
-        .attr("stroke-width", 0.0)
         .selectAll()
         .data(loops)
         .join("text")
         .attr("font-size", "10px")
         .attr("fill", "black") 
-        .attr("style", "text-anchor:middle;")
+        .attr("style", "text-anchor:middle;user-select:none;")
     
     if (is_weighted) {
         label_link.text(d => d.value);
@@ -357,17 +353,22 @@ function general_graph_template(N, g, E, is_directed, is_weighted, H = -1, W = -
         .attr("r", 12)
         .attr("fill", d => (d.group == -1 ? "white" :color(d.group)))
         .attr("stroke", "gray")
-        .attr("stroke-width", d => (d.group == -1 ? 1.0 : 0.0));
+        .attr("stroke-width", d => (d.group == -1 ? 1.0 : 0.0));    
+
+    /* クリックで色変更
+    node.on("contextmenu", (e) => {
+        e.preventDefault();
+        d3.select(e.srcElement).style("fill", "red");
+    });
+    */
 
     const label_node = svg.append("g")
-        .attr("stroke", "#ff9")
-        .attr("stroke-width", 0.0)
         .selectAll()
         .data(nodes)
         .join("text")
         .attr("font-size", "14px")
         .attr("fill", "black") 
-        .attr("style", "text-anchor:middle;")
+        .attr("style", "text-anchor:middle;user-select:none;")
         .text(d => d.id);
     
     const border_width = 1;
@@ -380,6 +381,11 @@ function general_graph_template(N, g, E, is_directed, is_weighted, H = -1, W = -
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended));
+
+    label_node.call(d3.drag()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended));
 
     function ticked() {
         node
@@ -599,7 +605,7 @@ function geo_2d_point_template(P, E, is_weighted = false, H = -1, W = -1) {
         .join("text")
         .attr("font-size", "15px")
         .attr("fill", "black") 
-        .attr("style", "text-anchor:middle;")
+        .attr("style", "text-anchor:middle;user-select:none;")
         .attr("x", d => x((nodes[d.source - 1]["x"] + nodes[d.target - 1]["x"]) / 2))
         .attr("y", d => y((nodes[d.source - 1]["y"] + nodes[d.target - 1]["y"]) / 2));
     
@@ -628,7 +634,7 @@ function geo_2d_point_template(P, E, is_weighted = false, H = -1, W = -1) {
         .attr("fill", "black") 
         .attr("x", d => x(d.x) + 5)
         .attr("y", d => y(d.y) - 5)
-        .attr("style", "text-anchor:middle;")
+        .attr("style", "text-anchor:middle;user-select:none;")
         .text(d => d.id);
 
     return svg.node();
