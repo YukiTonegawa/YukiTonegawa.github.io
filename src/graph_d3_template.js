@@ -353,14 +353,7 @@ function general_graph_template(N, g, E, is_directed, is_weighted, H = -1, W = -
         .attr("r", 12)
         .attr("fill", d => (d.group == -1 ? "white" :color(d.group)))
         .attr("stroke", "gray")
-        .attr("stroke-width", d => (d.group == -1 ? 1.0 : 0.0));    
-
-    /* クリックで色変更
-    node.on("contextmenu", (e) => {
-        e.preventDefault();
-        d3.select(e.srcElement).style("fill", "red");
-    });
-    */
+        .attr("stroke-width", d => (d.group == -1 ? 1.0 : 0.0));
 
     const label_node = svg.append("g")
         .selectAll()
@@ -370,6 +363,18 @@ function general_graph_template(N, g, E, is_directed, is_weighted, H = -1, W = -
         .attr("fill", "black") 
         .attr("style", "text-anchor:middle;user-select:none;")
         .text(d => d.id);
+
+    /*
+    node.on("contextmenu", (e) => {
+        e.preventDefault();
+        d3.select(e.srcElement).style("fill", "red");
+    });
+    
+    label_node.on("contextmenu", (e) => {
+        e.preventDefault();
+        d3.select(e.srcElement).style("fill", "red");
+    });
+    */
     
     const border_width = 1;
     const borderL = svg.append("rect").attr("x", 0).attr("y", 0).attr("width", border_width).attr("height", height).attr("stroke", "grey").attr("stroke-width", border_width);
